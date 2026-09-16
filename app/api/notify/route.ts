@@ -4,12 +4,13 @@ import { Resend } from 'resend';
 // Debug: check if env loaded
 const apiKey = process.env.RESEND_API_KEY;
 console.log("RESEND KEY STATUS:", apiKey? "Loaded ✅" : "MISSING ❌");
+const resend = apiKey ? new Resend(apiKey) : null as any;
 
-if (!apiKey) {
-  throw new Error("RESEND_API_KEY is missing. Check.env.local in project root and restart server");
+// Inside your POST function, add this check at the very top:
+if (!apiKey || !resend) {
+  console.log("RESEND KEY STATUS: MISSING - skipping email");
+  return Response.json({ success: true, skipped: true });
 }
-
-const resend = new Resend(apiKey);
 
 export async function POST(request: Request) {
   try {
