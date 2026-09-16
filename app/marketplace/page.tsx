@@ -12,7 +12,7 @@ export default function MarketplacePage(){
 
   return(
     <div className="bg-white min-h-screen">
-      <div className="max-w-[1200px] mx-auto p-4 md:p-8 bg-white">
+      <div className="max-w-300 mx-auto p-4 md:p-8 bg-white">
         <h1 className="text-[32px] font-black text-black leading-none">Find your ride across Malawi</h1>
         <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search Lilongwe, Blantyre, Mzuzu..." className="mt-6 w-full max-w-[420px] h-[52px] bg-white border-2 border-black/10 rounded-full px-6 text-[14px] font-black text-black placeholder:text-black/40 outline-none focus:border-black"/>
         <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -23,7 +23,7 @@ export default function MarketplacePage(){
                 <p className="font-black text-[22px] text-black mt-2">{t.from_city} → {t.to_city}</p>
                 <p className="text-[12px] font-bold text-black/60 mt-1">{t.date} • {t.time} • Hilux • {t.plate}</p>
                 <p className="font-black text-[24px] text-black mt-3">MK {Number(t.seat_price).toLocaleString()}</p>
-                <div className="mt-4 h-[240px] rounded-[14px] overflow-hidden bg-gray-50 border border-black/5"><img src={t.vehicle_url} className="w-full h-full object-cover"/></div>
+                <div className="mt-4 h-60 rounded-[14px] overflow-hidden bg-gray-50 border border-black/5"><img src={t.vehicle_url} className="w-full h-full object-cover"/></div>
               </Link>
               <a href={`https://wa.me/${t.whatsapp?.replace(/[^0-9]/g,'')}`} target="_blank" className="mt-4 w-full bg-[#22c55e] text-white font-black py-4 rounded-full flex justify-center">WhatsApp {t.driver_name?.split(' ')[0]}</a>
             </div>

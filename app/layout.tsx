@@ -12,7 +12,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <span className="font-black text-[20px] text-black">Tumani</span>
           </Link>
           <div className="flex items-center gap-4">
-            <Link href="/marketplace" className="font-black text-[14px] text-black">Marketplace</Link>
+           <Link href="/marketplace" className="font-black text-[14px] text-black outline-none focus:outline-none ring-0">Marketplace</Link>
             <Link href="/post" className="bg-blue-600 text-white font-black px-6 py-2.5 rounded-full text-[14px]">+ Post</Link>
           </div>
         </header>
