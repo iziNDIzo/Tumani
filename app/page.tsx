@@ -4,20 +4,7 @@ export default function Home() {
   return (
     <div className="bg-white min-h-screen">
       {/* NEW NAVBAR - ONLY LOGO + FIND TRIPS + LOGIN AS DRIVER */}
-      <nav className="h-[64px] w-full bg-white border-b border-black/10 flex items-center justify-between px-4 md:px-8 sticky top-0 z-50">
-        <Link href="/" className="flex items-center gap-2.5">
-          <div className="w-9 h-9 bg-[#1a73e8] rounded-full flex items-center justify-center font-black text-white">T</div>
-          <span className="font-black text-[20px] tracking-tight">Tumani</span>
-        </Link>
-        <div className="flex items-center gap-3">
-          <Link href="/marketplace" className="px-5 py-2.5 rounded-full bg-black text-white font-black text-[13px] hover:bg-black/80">
-            Find Trips
-          </Link>
-          <Link href="/auth" className="px-6 py-2.5 rounded-full bg-white border-2 border-black text-black font-black text-[13px] hover:bg-black hover:text-white transition">
-            Login as Driver
-          </Link>
-        </div>
-      </nav>
+ 
 
       <main className="max-w-[1200px] mx-auto px-4 py-8 md:py-10">
         {/* HERO */}
