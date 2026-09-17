@@ -35,7 +35,7 @@ export default function AuthPage(){
       })
 
       setSuccess(true)
-      setTimeout(()=> router.push("/drive"), 2000) // What happens NEXT: Go to Driver Dashboard
+    setTimeout(()=> router.push("/drive/pending"), 2000) // What happens NEXT: Go to Driver Dashboard
 
     } catch(e:any){
       setErrorMsg(e.message || "Failed to create account. Try again.")
