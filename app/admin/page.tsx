@@ -26,15 +26,22 @@ export default function AdminDashboard(){
   useEffect(()=>{load()},[])
 
   const approveDriver = async (id:string)=>{
-    await supabase.from('drivers').update({verified:true}).eq('id',id);
-    setMsg("✅ Driver approved — now live!"); load(); setSelected(null)
+    const { error } = await supabase.from('drivers').update({verified:true}).eq('id',id);
+    if(error){ setMsg("❌ "+error.message); return }
+    
+    // Update UI instantly - no more PENDING stuck
+    setDrivers(prev => prev.map(d => d.id === id ? { ...d, verified: true } : d))
+    setMsg("✅ Driver approved — now live!"); 
+    setSelected(null)
     setTimeout(()=>setMsg(""),3000)
+    await load() // reload from DB to be sure
   }
   const rejectDriver = async (id:string)=>{
     await supabase.from('drivers').update({verified:false}).eq('id',id);
-    load(); setSelected(null)
+    setDrivers(prev => prev.map(d => d.id === id ? { ...d, verified: false } : d))
+    setSelected(null)
+    await load()
   }
-
   const handleDelete = async ()=>{
     if(!deleteTarget) return
     if(deleteTarget.type==='driver') await supabase.from('drivers').delete().eq('id',deleteTarget.id)
