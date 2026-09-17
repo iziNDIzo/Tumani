@@ -21,13 +21,13 @@ export default function MarketplacePage(){
     supabase.from('parcels').select('*').eq('status','ready_for_pickup').order('created_at',{ascending:false}).then(({data})=>data&&setJobs(data))
 
     const channel = supabase.channel('parcels-live')
-    .on('postgres_changes',{event:'INSERT', schema:'public', table:'parcels'}, payload=>{
+   .on('postgres_changes',{event:'INSERT', schema:'public', table:'parcels'}, payload=>{
         if(payload.new.status==='ready_for_pickup') setJobs(prev=>[payload.new,...prev])
       })
-    .on('postgres_changes',{event:'UPDATE', schema:'public', table:'parcels'}, payload=>{
+   .on('postgres_changes',{event:'UPDATE', schema:'public', table:'parcels'}, payload=>{
         if(payload.new.status!=='ready_for_pickup') setJobs(prev=>prev.filter(j=>j.id!==payload.new.id))
       })
-    .subscribe()
+   .subscribe()
     return ()=>{ supabase.removeChannel(channel) }
   },[])
 
@@ -45,6 +45,12 @@ export default function MarketplacePage(){
     else alert(error.message)
   }
 
+  const handleLogout = async ()=>{
+    await supabase.auth.signOut()
+    setUser(null)
+    router.push("/auth")
+  }
+
   const badge = (type:string)=>{
     if(type==='parcel') return 'bg-[#e8f0fe] text-[#1a73e8] border-[#1a73e8]/20'
     if(type==='errand') return 'bg-[#f5f3ff] text-[#7c3aed] border-[#7c3aed]/20'
@@ -54,7 +60,10 @@ export default function MarketplacePage(){
   return(
     <div className="bg-white min-h-screen">
       <div className="max-w-[1200px] mx-auto p-4 md:p-8 bg-white">
-        <h1 className="text-[32px] font-black text-black leading-none tracking-tight">Find your ride across Malawi</h1>
+        <div className="flex justify-between items-center">
+          <h1 className="text-[32px] font-black text-black leading-none tracking-tight">Find your ride across Malawi</h1>
+          {user && <button onClick={handleLogout} className="px-5 py-2.5 bg-black text-white rounded-full font-black text-[12px]">Logout</button>}
+        </div>
         <div className="mt-6 flex flex-col md:flex-row gap-3 md:items-center">
           <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search Lilongwe, Blantyre, Mzuzu..." className="w-full max-w-[420px] h-[52px] bg-white border-2 border-black/10 rounded-full px-6 text-[14px] font-bold text-black placeholder:text-black/40 outline-none focus:border-[#7c3aed]/30 focus:ring-2 focus:ring-[#7c3aed]/10"/>
           <div className="flex gap-2 bg-[#f6f7f9] p-1 rounded-full w-fit">
@@ -75,7 +84,6 @@ export default function MarketplacePage(){
                 <p className="text-[13px] font-medium text-black/60 mt-1">{j.description}</p>
                 <p className="font-black text-[22px] text-black mt-3">MK {Number(j.fee).toLocaleString()}</p>
                 <div className="mt-4 flex gap-2">
-                  {/* THIS IS THE BUTTON YOU ASKED ABOUT */}
                   <button onClick={()=>claimJob(j.id)} className="flex-1 bg-[#1a73e8] hover:bg-black text-white font-black py-3 rounded-full text-[14px] transition-colors">
                     {user? "Claim Job" : "Login to Claim"}
                   </button>
