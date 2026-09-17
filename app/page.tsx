@@ -1,55 +1,81 @@
-"use client"
 import Link from "next/link"
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-white">
-      <div className="max-w-6xl mx-auto px-6 pt-16 pb-20 text-center">
-        <div className="inline-flex items-center gap-2 bg-blue-50 text-blue-700 px-4 py-1.5 rounded-full text-xs font-bold border border-blue-100">
-          🚐 Malawi's #1 Parcel & Ride Share
-        </div>
-
-        <h1 className="mt-6 text-4xl md:text-5xl font-extrabold text-gray-900 leading-[1.05] tracking-tight">
-          Send Parcels & Share<br />
-          Rides Across <span className="text-blue-600">Malawi</span>
-        </h1>
-
-        <p className="mt-4 text-[15px] text-gray-500 max-w-2xl mx-auto leading-relaxed">
-          Tumani connects drivers going empty with people needing to send parcels or find affordable rides. Fast, cheap, trusted.
-        </p>
-
-        <div className="mt-8 flex flex-wrap gap-3 justify-center">
-          <Link href="/drive" className="bg-blue-600 text-white px-8 py-4 rounded-full font-bold hover:bg-blue-700 shadow-md transition">
-            Post a Trip & Earn
+    <div className="bg-white min-h-screen">
+      {/* HEADER - SAME AS MARKETPLACE */}
+      <header className="bg-white border-b border-black/10">
+        <div className="max-w-[1200px] mx-auto px-4 h-[64px] flex justify-between items-center">
+          <Link href="/" className="flex items-center gap-2">
+            <div className="w-8 h-8 bg-[#1a73e8] rounded-full flex items-center justify-center font-black text-white text-[14px]">T</div>
+            <span className="font-black text-[18px] text-black">Tumani</span>
           </Link>
-          <Link href="/marketplace" className="bg-gray-900 text-white px-8 py-4 rounded-full font-bold hover:bg-black shadow-md transition">
-            Find a Trip
-          </Link>
+          <div className="flex items-center gap-6">
+            <Link href="/marketplace" className="font-bold text-[14px] text-black/60 hover:text-black">Marketplace</Link>
+            <Link href="/my-trips" className="font-bold text-[14px] text-black/60 hover:text-black">My Trips</Link>
+            <Link href="/send" className="bg-black text-white font-black px-5 py-2 rounded-full text-[14px]">Post Trip</Link>
+          </div>
+        </div>
+      </header>
+
+      <main className="max-w-[1200px] mx-auto px-4 py-8 md:py-14">
+        {/* HERO */}
+        <div className="max-w-[700px]">
+          <h1 className="font-black text-[40px] md:text-[56px] leading-[0.9] text-black tracking-tight">
+            Send anything,<br />go anywhere.
+          </h1>
+          <p className="font-bold text-[16px] text-black/60 mt-4">
+            Malawi's trusted network of verified Hilux drivers. Book rides, send parcels, run errands.
+          </p>
         </div>
 
-        {/* How it Works - Accent + Cool Numbers */}
-        <div className="mt-20 grid md:grid-cols-3 gap-6 text-left">
-          <div className="bg-gray-50 p-6 rounded-2xl border border-gray-100 relative overflow-hidden group hover:shadow-lg hover:shadow-blue-100/50 transition-all">
-            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-600 to-cyan-400"></div>
-            <div className="w-11 h-11 bg-gradient-to-br from-blue-600 to-blue-400 text-white rounded-xl flex items-center justify-center font-extrabold text-[16px] shadow-lg shadow-blue-200 ring-4 ring-blue-50">1</div>
-            <h3 className="font-extrabold mt-4 text-gray-900 text-[16px]">Post Your Route</h3>
-            <p className="text-[13.5px] text-gray-600 mt-2 leading-relaxed">Driver shares where he&apos;s going, seats & parcel space available.</p>
-          </div>
-          <div className="bg-gray-50 p-6 rounded-2xl border border-gray-100 relative overflow-hidden group hover:shadow-lg hover:shadow-violet-100/50 transition-all">
-            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-violet-600 to-fuchsia-400"></div>
-            <div className="w-11 h-11 bg-gradient-to-br from-violet-600 to-fuchsia-500 text-white rounded-xl flex items-center justify-center font-extrabold text-[16px] shadow-lg shadow-violet-200 ring-4 ring-violet-50">2</div>
-            <h3 className="font-extrabold mt-4 text-gray-900 text-[16px]">Connect on WhatsApp</h3>
-            <p className="text-[13.5px] text-gray-600 mt-2 leading-relaxed">Users find your trip and book directly via WhatsApp. No middleman.</p>
-          </div>
-          <div className="bg-gray-50 p-6 rounded-2xl border border-gray-100 relative overflow-hidden group hover:shadow-lg hover:shadow-emerald-100/50 transition-all">
-            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-600 to-amber-400"></div>
-            <div className="w-11 h-11 bg-gradient-to-br from-emerald-600 to-amber-400 text-white rounded-xl flex items-center justify-center font-extrabold text-[16px] shadow-lg shadow-emerald-200 ring-4 ring-emerald-50">3</div>
-            <h3 className="font-extrabold mt-4 text-gray-900 text-[16px]">Earn on Every Trip</h3>
-            <p className="text-[13.5px] text-gray-600 mt-2 leading-relaxed">Fill empty seats, deliver parcels, make extra MK 40k-100k per trip.</p>
-          </div>
-          <p className="mt-4 text-xs text-gray-400">Driver? <button onClick={()=>{localStorage.setItem("tumani_is_driver","true"); window.location.href="/drive"}} className="text-blue-600 font-bold underline">Click here to sign in as driver</button></p>
+        {/* SEARCH BAR */}
+        <div className="mt-8 bg-white border-2 border-black/10 rounded-[16px] p-2 flex gap-2 max-w-[700px] shadow-sm">
+          <input placeholder="Where from? e.g. Salima" className="flex-1 bg-[#f6f7f9] rounded-[12px] px-4 py-3 font-bold text-[14px] text-black outline-none" />
+          <input placeholder="Where to? e.g. Lilongwe" className="flex-1 bg-[#f6f7f9] rounded-[12px] px-4 py-3 font-bold text-[14px] text-black outline-none" />
+          <Link href="/marketplace" className="bg-black text-white font-black px-6 py-3 rounded-[12px] text-[14px]">Search</Link>
         </div>
-      </div>
+
+        {/* 4 CARDS - CUSTOMER EXPERIENCE */}
+        <div className="mt-10 grid grid-cols-1 md:grid-cols-2 gap-4 max-w-[700px]">
+
+          <Link href="/send" className="bg-white border-2 border-black/10 rounded-[20px] p-6 hover:border-black hover:shadow-sm transition-all group">
+            <div className="w-12 h-12 bg-[#e8f0fe] rounded-[12px] flex items-center justify-center text-[22px]">📦</div>
+            <h3 className="font-black text-[20px] text-black mt-4 group-hover:text-[#1a73e8]">Send Parcel</h3>
+            <p className="font-bold text-[13px] text-black/60 mt-1">Lilongwe to Mzuzu today. Get tracking code TUM-XXXXX</p>
+            <p className="font-black text-[13px] text-black mt-3">From MK 5,000 →</p>
+          </Link>
+
+          <Link href="/marketplace" className="bg-white border-2 border-black/10 rounded-[20px] p-6 hover:border-black hover:shadow-sm transition-all group">
+            <div className="w-12 h-12 bg-[#e6f4ea] rounded-[12px] flex items-center justify-center text-[22px]">🚗</div>
+            <h3 className="font-black text-[20px] text-black mt-4 group-hover:text-[#1a73e8]">Book a Ride</h3>
+            <p className="font-bold text-[13px] text-black/60 mt-1">Find verified Hilux seats leaving now</p>
+            <p className="font-black text-[13px] text-black mt-3">See trips →</p>
+          </Link>
+
+          <Link href="/errands" className="bg-white border-2 border-black/10 rounded-[20px] p-6 hover:border-black hover:shadow-sm transition-all group">
+            <div className="w-12 h-12 bg-[#fef7e0] rounded-[12px] flex items-center justify-center text-[22px]">🏃</div>
+            <h3 className="font-black text-[20px] text-black mt-4 group-hover:text-[#1a73e8]">Send Errand</h3>
+            <p className="font-bold text-[13px] text-black/60 mt-1">Buy, deliver, queue for you in town</p>
+            <p className="font-black text-[13px] text-black mt-3">Post errand →</p>
+          </Link>
+
+          <Link href="/track" className="bg-white border-2 border-black/10 rounded-[20px] p-6 hover:border-black hover:shadow-sm transition-all group">
+            <div className="w-12 h-12 bg-[#f3e8fd] rounded-[12px] flex items-center justify-center text-[22px]">📍</div>
+            <h3 className="font-black text-[20px] text-black mt-4 group-hover:text-[#1a73e8]">Track Parcel</h3>
+            <p className="font-bold text-[13px] text-black/60 mt-1">Enter code TUM-XXXXX to track live</p>
+            <p className="font-black text-[13px] text-black mt-3">Track now →</p>
+          </Link>
+
+        </div>
+
+        {/* TRUST */}
+        <div className="mt-10 flex gap-6 font-bold text-[12px] text-black/40">
+          <span>✓ Verified drivers</span>
+          <span>✓ Plate checked</span>
+          <span>✓ WhatsApp direct</span>
+        </div>
+      </main>
     </div>
   )
 }
