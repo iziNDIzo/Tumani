@@ -14,7 +14,7 @@ export default function AuthPage(){
   const next = () => { setErrorMsg(""); setStep(s=>Math.min(4,s+1)) }
   const back = () => { setErrorMsg(""); setStep(s=>Math.max(1,s-1)) }
 
-  const handleCreate = async () => {
+const handleCreate = async () => {
     if(!form.email ||!form.password || form.password.length < 6){
       setErrorMsg("Please enter valid email and password (min 6 chars)")
       return
@@ -28,16 +28,36 @@ export default function AuthPage(){
       if(authError) throw authError
 
       const userId = authData.user?.id
-      await supabase.from('drivers').insert({
-        id: userId, full_name: form.name, phone: form.phone,
-        whatsapp: form.whatsapp, vehicle_type: form.vehicle,
-        registration_number: form.reg, email: form.email, verified: false,
+      if(!userId) throw new Error("No user ID — check if email confirmation is required in Supabase > Auth > Settings. Disable it for now.")
+
+      // 1. Insert into drivers (your Admin table)
+      const { error: driverErr } = await supabase.from('drivers').insert({
+        id: userId, 
+        user_id: userId, // <-- YOU WERE MISSING THIS!
+        full_name: form.name, 
+        phone: form.phone,
+        whatsapp: form.whatsapp, 
+        vehicle_type: form.vehicle,
+        registration_number: form.reg, 
+        email: form.email, 
+        verified: false,
       })
+      if(driverErr) throw driverErr
+
+      // 2. ALSO insert/update profiles so you don't lose drivers
+      await supabase.from('profiles').upsert({
+        id: userId,
+        full_name: form.name,
+        phone: form.phone,
+        role: 'driver',
+        verified: false
+      }, { onConflict: 'id' })
 
       setSuccess(true)
-    setTimeout(()=> router.push("/drive/pending"), 2000) // What happens NEXT: Go to Driver Dashboard
+      setTimeout(()=> router.push("/drive/pending"), 2000)
 
     } catch(e:any){
+      console.error(e)
       setErrorMsg(e.message || "Failed to create account. Try again.")
     } finally{ setLoading(false) }
   }
