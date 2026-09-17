@@ -1,53 +1,130 @@
 "use client"
 import { useState } from "react"
-import { supabase } from "@/lib/supabaseClient"
-import { useRouter } from "next/navigation"
-import Link from "next/link"
 
 export default function AuthPage(){
-  const [isSignup,setIsSignup]=useState(true)
-  const [form,setForm]=useState({name:"", phone:"", email:"", password:"", vehicle:"Sienta"})
-  const [loading,setLoading]=useState(false)
-  const router=useRouter()
+  const [step,setStep]=useState(1)
+  const [form,setForm]=useState({name:"",phone:"",whatsapp:"",vehicle:"",reg:"",email:"",password:"",images:[] as File[]})
 
-  const handleAuth = async () => {
-    if(!form.email ||!form.password || (isSignup && (!form.name ||!form.phone))){ alert("Fill all fields"); return }
-    setLoading(true)
-    if(isSignup){
-      const {data, error} = await supabase.auth.signUp({email:form.email, password:form.password})
-      if(error){ alert(error.message); setLoading(false); return }
-      if(data.user){
-        await supabase.from("profiles").insert({id:data.user.id, full_name:form.name, phone:form.phone, vehicle:form.vehicle})
-      }
-      alert("Account created! Check email, then Login.")
-      setIsSignup(false)
-    }else{
-      const {error} = await supabase.auth.signInWithPassword({email:form.email, password:form.password})
-      if(error) alert(error.message)
-      else router.push("/drive")
-    }
-    setLoading(false)
-  }
+  const next = () => setStep(s=>Math.min(4,s+1))
+  const back = () => setStep(s=>Math.max(1,s-1))
 
-  const I="w-full bg-[#f8f7ff] border-2 border-black/10 rounded-[12px] px-4 py-3.5 text-[14px] font-bold text-black placeholder:text-black/40 outline-none focus:bg-white focus:border-[#7c3aed]/30 focus:ring-2 focus:ring-[#7c3aed]/10 transition-all"
-  const L="text-[11px] font-black tracking-widest uppercase text-black/40 mb-2 block"
   return (
-    <div className="min-h-screen bg-white flex items-center justify-center p-4">
-      <div className="bg-white border-2 border-black/10 rounded-[24px] p-6 md:p-8 w-full max-w-[420px] shadow-[0_8px_40px_rgba(0,0,0,0.06)]">
-        <Link href="/" className="inline-flex items-center gap-2 font-black text-[22px] text-black"><span className="w-8 h-8 bg-[#1a73e8] text-white rounded-full flex items-center justify-center text-[14px]">T</span> Tumani</Link>
-        <h1 className="text-[28px] font-black tracking-tight text-black mt-5 leading-none">{isSignup? "Driver Sign Up" : "Driver Login"}</h1>
-        <p className="text-[13px] font-medium text-black/60 mt-2 mb-6">{isSignup? "Verified drivers get 3x more bookings" : "Welcome back, driver"}</p>
+    <div className="min-h-[calc(100vh-64px)] bg-[#fcfcfc] flex items-center justify-center p-4">
+      <div className="w-full max-w-[520px] bg-white rounded-[32px] border border-black/10 shadow-[0_20px_60px_rgba(0,0,0,0.06)] p-8 md:p-10">
 
-        {isSignup && <>
-          <span className={L}>Full Name</span><input className={I} placeholder="Victor Banda" value={form.name} onChange={e=>setForm({...form,name:e.target.value})} /><div className="h-3.5" />
-          <span className={L}>Phone WhatsApp</span><input className={I} placeholder="0998838866" value={form.phone} onChange={e=>setForm({...form,phone:e.target.value})} /><div className="h-3.5" />
-          <span className={L}>Main Vehicle</span><select className={I} value={form.vehicle} onChange={e=>setForm({...form,vehicle:e.target.value})}><option>Sienta</option><option>Freed</option><option>Sedan</option><option>Minibus - 16 Seater</option><option>Pickup</option><option>Truck</option></select><div className="h-3.5" />
-        </>}
-        <span className={L}>Email</span><input className={I} placeholder="victor@gmail.com" value={form.email} onChange={e=>setForm({...form,email:e.target.value})} /><div className="h-3.5" />
-        <span className={L}>Password</span><input type="password" className={I} placeholder="••••••••" value={form.password} onChange={e=>setForm({...form,password:e.target.value})} />
+        {/* Progress */}
+        <div className="flex gap-2 mb-8">
+          {[1,2,3,4].map(i=>(
+            <div key={i} className={`h-2 flex-1 rounded-full transition-all duration-500 ${i<=step? "bg-black" : "bg-black/10"}`} />
+          ))}
+        </div>
 
-        <button onClick={handleAuth} disabled={loading} className="w-full bg-[#1a73e8] hover:bg-black text-white font-black py-4 rounded-[12px] mt-6 text-[14px] shadow-[0_4px_16px_rgba(26,115,232,0.24)] transition-colors disabled:opacity-50">{loading? "..." : isSignup? "Create Driver Account" : "Login"}</button>
-        <button onClick={()=>setIsSignup(!isSignup)} className="w-full text-[13px] font-black text-black/60 hover:text-[#7c3aed] mt-5 transition-colors">{isSignup? "Already have account? Login" : "New driver? Sign Up"}</button>
+        <div className="flex items-center gap-2.5 mb-6">
+          <div className="w-9 h-9 bg-[#1a73e8] rounded-full flex items-center justify-center font-black text-white">T</div>
+          <span className="font-black text-[15px] tracking-widest text-black/40">STEP {step} OF 4</span>
+        </div>
+
+        {/* STEP 1 */}
+        {step===1 && (
+          <div className="animate-in">
+            <h1 className="font-black text-[32px] leading-[0.95] tracking-tight">Welcome to Tumani Driver 👋</h1>
+            <p className="text-[16px] font-medium text-black/60 mt-3 leading-[1.4]">We're excited to have you. Let's get you earning today. Please enter your full name and phone number below.</p>
+
+            <div className="space-y-5 mt-8">
+              <div>
+                <label className="text-[11px] font-black tracking-[0.15em] text-black/40">FULL NAME</label>
+                <input value={form.name} onChange={e=>setForm({...form,name:e.target.value})} placeholder="Enter full name here... e.g. Victor Kasakula" className="mt-2 w-full h-[56px] px-5 rounded-2xl bg-[#f5f3ff] border border-black/10 outline-none font-bold placeholder:text-black/30 focus:bg-white focus:border-black transition" />
+              </div>
+              <div>
+                <label className="text-[11px] font-black tracking-[0.15em] text-black/40">PHONE NUMBER</label>
+                <input value={form.phone} onChange={e=>setForm({...form,phone:e.target.value})} placeholder="Enter phone number here... e.g. 0998838866" className="mt-2 w-full h-[56px] px-5 rounded-2xl bg-[#f5f3ff] border border-black/10 outline-none font-bold placeholder:text-black/30 focus:bg-white focus:border-black transition" />
+              </div>
+              <button onClick={next} disabled={!form.name ||!form.phone} className="w-full h-[56px] bg-black text-white rounded-full font-black text-[15px] disabled:opacity-30 hover:bg-black/90 transition mt-2">Next → Let's continue</button>
+            </div>
+          </div>
+        )}
+
+        {/* STEP 2 */}
+        {step===2 && (
+          <div>
+            <h1 className="font-black text-[32px] leading-[0.95] tracking-tight">Stay connected 💬</h1>
+            <p className="text-[16px] font-medium text-black/60 mt-3 leading-[1.4]">Your customers would like to reach you through WhatsApp. Please enter your WhatsApp number below so they can chat you directly.</p>
+            <div className="space-y-5 mt-8">
+              <div>
+                <label className="text-[11px] font-black tracking-[0.15em] text-black/40">WHATSAPP NUMBER</label>
+                <input value={form.whatsapp} onChange={e=>setForm({...form,whatsapp:e.target.value})} placeholder="Enter WhatsApp number here... e.g. 0881234567" className="mt-2 w-full h-[56px] px-5 rounded-2xl bg-[#f5f3ff] border border-black/10 outline-none font-bold placeholder:text-black/30 focus:bg-white focus:border-black transition" />
+                <p className="text-[12px] text-black/40 mt-2 font-medium">We’ll never spam. Only booking alerts.</p>
+              </div>
+              <div className="flex gap-3">
+                <button onClick={back} className="h-[56px] px-8 rounded-full border-2 border-black font-black text-[15px]">Back</button>
+                <button onClick={next} disabled={!form.whatsapp} className="flex-1 h-[56px] bg-black text-white rounded-full font-black text-[15px] disabled:opacity-30">Next → Almost there</button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* STEP 3 */}
+        {step===3 && (
+          <div>
+            <h1 className="font-black text-[32px] leading-[0.95] tracking-tight">Let's verify you ✅</h1>
+            <p className="text-[16px] font-medium text-black/60 mt-3 leading-[1.4]">A trusted driver gets <span className="font-black text-black">10x more bookings</span>. Please enter your vehicle type, registration number, and 3 clear images.</p>
+            <div className="space-y-5 mt-8">
+              <div>
+                <label className="text-[11px] font-black tracking-[0.15em] text-black/40">MAIN VEHICLE</label>
+                <select value={form.vehicle} onChange={e=>setForm({...form,vehicle:e.target.value})} className="mt-2 w-full h-[56px] px-5 rounded-2xl bg-[#f5f3ff] border border-black/10 outline-none font-bold">
+                  <option value="">Select your main vehicle...</option>
+                  <option>Sienta - 7 seater</option>
+                  <option>Noah / Voxy</option>
+                  <option>Minibus 15 seater</option>
+                  <option>Pickup / Lorry</option>
+                  <option>Motorbike</option>
+                </select>
+              </div>
+              <div>
+                <label className="text-[11px] font-black tracking-[0.15em] text-black/40">REGISTRATION NUMBER</label>
+                <input value={form.reg} onChange={e=>setForm({...form,reg:e.target.value})} placeholder="Enter registration number here... e.g. MH 1234" className="mt-2 w-full h-[56px] px-5 rounded-2xl bg-[#f5f3ff] border border-black/10 outline-none font-bold placeholder:text-black/30 focus:bg-white focus:border-black transition" />
+              </div>
+              <div>
+                <label className="text-[11px] font-black tracking-[0.15em] text-black/40">VEHICLE PHOTOS (3 REQUIRED)</label>
+                <div className="mt-2 grid grid-cols-3 gap-3">
+                  {[0,1,2].map(i=>(
+                    <label key={i} className="h-[88px] rounded-2xl bg-[#f5f3ff] border-2 border-dashed border-black/15 flex flex-col items-center justify-center cursor-pointer hover:bg-black/[0.03] transition">
+                      <span className="text-[22px]">📸</span><span className="text-[10px] font-black mt-1">Front / Side / Back</span>
+                      <input type="file" hidden accept="image/*" onChange={e=>{ if(e.target.files?.[0]) setForm({...form,images:[...form.images,e.target.files[0]]}) }} />
+                    </label>
+                  ))}
+                </div>
+                <p className="text-[12px] text-black/40 mt-2 font-medium">{form.images.length}/3 uploaded — customers trust what they see!</p>
+              </div>
+              <div className="flex gap-3">
+                <button onClick={back} className="h-[56px] px-8 rounded-full border-2 border-black font-black text-[15px]">Back</button>
+                <button onClick={next} disabled={!form.vehicle ||!form.reg} className="flex-1 h-[56px] bg-black text-white rounded-full font-black text-[15px] disabled:opacity-30">Next → Final step</button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* STEP 4 */}
+        {step===4 && (
+          <div>
+            <h1 className="font-black text-[32px] leading-[0.95] tracking-tight">You're almost done 🎉</h1>
+            <p className="text-[16px] font-medium text-black/60 mt-3 leading-[1.4]">Create your login so you can manage trips. This will be your driver account.</p>
+            <div className="space-y-5 mt-8">
+              <div>
+                <label className="text-[11px] font-black tracking-[0.15em] text-black/40">EMAIL ADDRESS</label>
+                <input value={form.email} onChange={e=>setForm({...form,email:e.target.value})} placeholder="Enter email address here... e.g. victor@gmail.com" className="mt-2 w-full h-[56px] px-5 rounded-2xl bg-[#f5f3ff] border border-black/10 outline-none font-bold placeholder:text-black/30 focus:bg-white focus:border-black transition" />
+              </div>
+              <div>
+                <label className="text-[11px] font-black tracking-[0.15em] text-black/40">CREATE PASSWORD</label>
+                <input type="password" value={form.password} onChange={e=>setForm({...form,password:e.target.value})} placeholder="Enter password here... min. 6 characters" className="mt-2 w-full h-[56px] px-5 rounded-2xl bg-[#f5f3ff] border border-black/10 outline-none font-bold placeholder:text-black/30 focus:bg-white focus:border-black transition" />
+              </div>
+              <button className="w-full h-[60px] bg-[#1a73e8] text-white rounded-full font-black text-[16px] shadow-[0_8px_20px_rgba(26,115,232,0.3)] hover:bg-[#1557b0] transition">Create Account & Start Earning →</button>
+              <button onClick={back} className="w-full text-center text-[13px] font-black text-black/40">← Go back and review</button>
+              <p className="text-center text-[11px] font-medium text-black/30 leading-[1.4]">By creating account, you agree to Tumani's driver terms. Verified in 24hrs.</p>
+            </div>
+          </div>
+        )}
+
       </div>
     </div>
   )
