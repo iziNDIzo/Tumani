@@ -15,27 +15,46 @@ export default function AdminDashboard(){
   const [deleteTarget,setDeleteTarget]=useState<{id:string, type:string} | null>(null) // no more confirm()
   const [msg,setMsg]=useState("")
 
-  const load = async ()=>{
-    const {data: d} = await supabase.from('drivers').select('*').order('created_at',{ascending:false})
-    if(d) setDrivers(d)
-    const {data: t} = await supabase.from('trips').select('*').order('created_at',{ascending:false})
-    if(t) setTrips(t)
-    const {data: p} = await supabase.from('parcels').select('*').order('created_at',{ascending:false})
-    if(p) setParcels(p)
-  }
+const load = async ()=>{
+  // Read from BOTH places
+  const {data: fromDrivers} = await supabase.from('drivers').select('*').order('created_at',{ascending:false})
+  const {data: fromProfiles} = await supabase.from('profiles').select('*').eq('role','driver').order('created_at',{ascending:false})
+  
+  // Merge — convert profiles format to driver format
+  const converted = (fromProfiles||[]).map((p:any)=>({
+    id: p.id,
+    user_id: p.id,
+    full_name: p.full_name,
+    phone: p.phone,
+    email: p.email || '',
+    vehicle_type: p.vehicle_type || 'N/A',
+    registration_number: p.registration_number || '',
+    verified: p.verified || false,
+    created_at: p.created_at
+  }))
+  
+  const merged = [...(fromDrivers||[]), ...converted]
+  // dedupe by phone
+  const unique = merged.filter((v,i,a)=> a.findIndex(t=> (t.phone && v.phone && t.phone===v.phone) || t.id===v.id)===i)
+  
+  setDrivers(unique)
+  
+  const {data: t} = await supabase.from('trips').select('*').order('created_at',{ascending:false})
+  if(t) setTrips(t)
+  const {data: p} = await supabase.from('parcels').select('*').order('created_at',{ascending:false})
+  if(p) setParcels(p)
+}
   useEffect(()=>{load()},[])
 
-  const approveDriver = async (id:string)=>{
-    const { error } = await supabase.from('drivers').update({verified:true}).eq('id',id);
-    if(error){ setMsg("❌ "+error.message); return }
-    
-    // Update UI instantly - no more PENDING stuck
-    setDrivers(prev => prev.map(d => d.id === id ? { ...d, verified: true } : d))
-    setMsg("✅ Driver approved — now live!"); 
-    setSelected(null)
-    setTimeout(()=>setMsg(""),3000)
-    await load() // reload from DB to be sure
-  }
+const approveDriver = async (id:string)=>{
+  await supabase.from('drivers').update({verified:true}).eq('id',id);
+  await supabase.from('profiles').update({verified:true}).eq('id',id);
+  await supabase.from('driver_profiles').update({verified:true}).eq('user_id',id);
+  
+  setDrivers(prev => prev.map(d => d.id === id ? { ...d, verified: true } : d))
+  setMsg("✅ Driver approved — now live!");
+  setTimeout(()=>setMsg(""),3000)
+}
   const rejectDriver = async (id:string)=>{
     await supabase.from('drivers').update({verified:false}).eq('id',id);
     setDrivers(prev => prev.map(d => d.id === id ? { ...d, verified: false } : d))
