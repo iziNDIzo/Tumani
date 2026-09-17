@@ -1,23 +1,40 @@
-import "./globals.css"
+"use client"
 import Link from "next/link"
+import { useEffect, useState } from "react"
+import { createClient } from "@supabase/supabase-js"
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <html lang="en" className="bg-white">
-      <head><meta name="viewport" content="width=device-width, initial-scale=1" /></head>
-      <body className="bg-white text-black min-h-screen antialiased">
-        <header className="h-[68px] bg-white border-b-2 border-black/10 flex items-center justify-between px-4 md:px-8 sticky top-0 z-50">
-          <Link href="/" className="flex items-center gap-2.5">
-            <div className="w-9 h-9 bg-blue-600 rounded-full flex items-center justify-center text-white font-black">T</div>
-            <span className="font-black text-[20px] text-black">Tumani</span>
+export default function Navbar(){
+  const [user,setUser]=useState<any>(null)
+  const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!)
+
+  useEffect(()=>{
+    supabase.auth.getUser().then(({data})=> setUser(data.user))
+  },[])
+
+  return(
+    <nav className="h-[64px] w-full bg-white border-b border-black/10 flex items-center justify-between px-6 sticky top-0 z-50">
+      {/* LEFT */}
+      <Link href="/" className="flex items-center gap-2.5">
+        <div className="w-9 h-9 bg-[#1a73e8] rounded-full flex items-center justify-center font-black text-white">T</div>
+        <span className="font-black text-[20px] tracking-tight">Tumani</span>
+      </Link>
+
+      {/* RIGHT */}
+      <div className="flex items-center gap-3">
+        <Link href="/marketplace" className="hidden md:flex px-5 py-2.5 rounded-full bg-black text-white font-black text-[13px] hover:bg-black/80">
+          Find Trips
+        </Link>
+
+        {user? (
+          <Link href="/drive" className="px-5 py-2.5 rounded-full bg-[#1a73e8] text-white font-black text-[13px]">
+            My Drive
           </Link>
-          <div className="flex items-center gap-4">
-           <Link href="/marketplace" className="font-black text-[14px] text-black outline-none focus:outline-none ring-0">Marketplace</Link>
-            <Link href="/post" className="bg-blue-600 text-white font-black px-6 py-2.5 rounded-full text-[14px]">+ Post</Link>
-          </div>
-        </header>
-        <main className="bg-white">{children}</main>
-      </body>
-    </html>
+        ) : (
+          <Link href="/auth" className="px-6 py-2.5 rounded-full bg-white border-2 border-black/10 text-black font-black text-[13px] hover:bg-black hover:text-white transition">
+            Login as Driver
+          </Link>
+        )}
+      </div>
+    </nav>
   )
 }
