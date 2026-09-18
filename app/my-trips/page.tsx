@@ -14,13 +14,30 @@ export default function MyTrips() {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) { setLoading(false); return }
 
-      const { data, error } = await supabase
-       .from('trips')
-       .select('*')
-       .eq('driver_id', user.id)
-       .order('created_at', { ascending: false })
+      // Get driver record to find real driver.id
+      const { data: driver } = await supabase
+       .from('drivers')
+       .select('id, user_id')
+       .eq('user_id', user.id)
+       .single()
 
-      if (!error && data) setTrips(data)
+      console.log("AUTH USER:", user.id, "DRIVER RECORD:", driver)
+
+      let query = supabase.from('trips').select('*').order('created_at', { ascending: false })
+
+      // Search for trips by BOTH possible ids
+      if (driver) {
+        const { data } = await supabase
+         .from('trips')
+         .select('*')
+         .or(`driver_id.eq.${user.id},driver_id.eq.${driver.id}`)
+         .order('created_at', { ascending: false })
+        if (data) setTrips(data)
+      } else {
+        // fallback if not a driver
+        const { data } = await supabase.from('trips').select('*').eq('driver_id', user.id).order('created_at', { ascending: false })
+        if (data) setTrips(data)
+      }
       setLoading(false)
     })()
   }, [])
@@ -31,7 +48,7 @@ export default function MyTrips() {
     if (!error) setTrips(trips.filter(t => t.id!== id))
   }
 
-  if (loading) return <div className="min-h-screen flex items-center justify-center font-black">Loading your trips...</div>
+  if (loading) return <div className="min-h-screen flex items-center justify-center font-black">Loading...</div>
 
   return (
     <div className="min-h-screen bg-[#f8fafc]">
@@ -56,11 +73,11 @@ export default function MyTrips() {
             {trips.map((t) => (
               <div key={t.id} className="bg-white rounded-[24px] border border-black/10 p-6 flex justify-between items-center">
                 <div>
-                  <div className="font-black text-[18px]">{t.from_city} → {t.to_city}</div>
+                  <div className="font-black text-[18px]">{t.from_city || t.from_location} → {t.to_city || t.to_location}</div>
                   <div className="text-[13px] text-black/60 font-medium mt-1">
                     {t.date} • {t.time} • {t.seats || 4} seats • MK {t.price}
                   </div>
-                  <div className="text-[11px] font-bold text-black/40 mt-1 uppercase">{t.status}</div>
+                  <div className="text-[10px] text-gray-400 mt-1">{t.id.slice(0,8)} • driver_id: {t.driver_id?.slice(0,8)}</div>
                 </div>
                 <button onClick={() => handleDelete(t.id)} className="bg-red-50 text-red-600 px-4 py-2 rounded-full font-bold text-[12px]">Delete</button>
               </div>

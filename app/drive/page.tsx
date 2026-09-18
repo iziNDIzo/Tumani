@@ -26,26 +26,29 @@ export default function DrivePage(){
     setMsg("")
     const tripDate = date? date : new Date().toISOString().split('T')[0]
 
-    const { error } = await supabase.from('trips').insert({
-      from_city: from,
-      to_city: to,
+    // ONLY columns that exist in your table
+    const { data, error } = await supabase.from('trips').insert({
+      from_city: from.trim(),
+      to_city: to.trim(),
       date: tripDate,
       time: "08:00",
       price: Number(price),
-      driver_id: driver.user_id,
-      vehicle_type: driver.vehicle_type,
-      registration_number: driver.registration_number,
+      seats: 4,
+      driver_id: driver.id, // <-- NOT driver.user_id
       status: 'active'
-    })
+    }).select()
+
+    console.log("INSERT RESULT:", data, error)
+
     if(error) setMsg("❌ "+error.message)
     else {
-      setMsg("✅ Trip posted!")
+      setMsg("✅ Trip posted! Go to My Trips")
       setFrom(""); setTo(""); setPrice(""); setDate("")
     }
     setLoading(false)
   }
 
-  if(!driver) return <div className="p-10 font-black">Loading...</div>
+  if(!driver) return <div className="p-10 font-black">Loading driver...</div>
 
   return (
     <div className="min-h-screen bg-[#fcfcfc] p-4 md:p-8">
@@ -67,7 +70,7 @@ export default function DrivePage(){
           </div>
 
           <div className="mt-4 bg-black/5 rounded-2xl px-4 py-3 text-[11px] font-black text-black/50 tracking-wide">
-            POSTING AS: {driver.full_name} • {driver.registration_number} • {driver.phone}
+            POSTING AS: {driver.full_name} • {driver.registration_number} • {driver.phone} • id:{driver.id.slice(0,8)}
           </div>
 
           {msg && <div className="mt-4 font-bold text-[13px] p-4 rounded-2xl bg-black text-white text-center">{msg}</div>}
