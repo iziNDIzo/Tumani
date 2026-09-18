@@ -1,28 +1,40 @@
 "use client"
 import { useEffect, useState } from "react"
 import Link from "next/link"
+import { supabase } from "@/lib/supabaseClient"
 
 type Trip = any
 
 export default function MyTrips() {
   const [trips, setTrips] = useState<Trip[]>([])
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    setTrips(JSON.parse(localStorage.getItem("tumani_trips") || "[]"))
+    (async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) { setLoading(false); return }
+
+      const { data, error } = await supabase
+       .from('trips')
+       .select('*')
+       .eq('driver_id', user.id)
+       .order('created_at', { ascending: false })
+
+      if (!error && data) setTrips(data)
+      setLoading(false)
+    })()
   }, [])
 
-  const handleDelete = (id: number) => {
-    const updated = trips.filter(t => t.id!== id)
-    localStorage.setItem("tumani_trips", JSON.stringify(updated))
-    setTrips(updated)
-    if (updated.length === 0) {
-      localStorage.removeItem("tumani_is_driver")
-    }
+  const handleDelete = async (id: string) => {
+    if (!confirm("Delete this trip?")) return
+    const { error } = await supabase.from('trips').delete().eq('id', id)
+    if (!error) setTrips(trips.filter(t => t.id!== id))
   }
+
+  if (loading) return <div className="min-h-screen flex items-center justify-center font-black">Loading your trips...</div>
 
   return (
     <div className="min-h-screen bg-[#f8fafc]">
-      {/* Top bar */}
       <div className="bg-white border-b border-gray-100">
         <div className="max-w-4xl mx-auto px-6 py-4 flex justify-between items-center">
           <Link href="/marketplace" className="text-blue-600 font-bold text-sm">← Marketplace</Link>
@@ -31,33 +43,30 @@ export default function MyTrips() {
       </div>
 
       <div className="max-w-4xl mx-auto px-6 py-8">
-        <h1 className="text-3xl font-extrabold text-gray-900">My Trips</h1>
-        <p className="text-sm text-gray-500 mt-1 font-medium">{trips.length} trip(s) posted by you</p>
+        <h1 className="font-black text-[28px]">My Trips</h1>
+        <p className="text-black/50 font-medium text-[13px] mt-1">{trips.length} trips posted</p>
 
-        <div className="mt-6 space-y-4">
-          {trips.length === 0? (
-            <div className="bg-white p-8 rounded-2xl border border-gray-100 text-center">
-              <p className="font-bold text-gray-900">No trips yet</p>
-              <p className="text-sm text-gray-500 mt-1">Post your first trip to start earning</p>
-              <Link href="/drive" className="inline-block mt-4 bg-blue-600 text-white px-6 py-3 rounded-full text-sm font-bold">Post a Trip</Link>
-            </div>
-          ) : (
-            trips.map((t) => (
-              <div key={t.id} className="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm flex justify-between items-center">
+        {trips.length === 0? (
+          <div className="mt-12 text-center">
+            <p className="font-bold text-black/40">No trips yet</p>
+            <Link href="/drive" className="inline-block mt-4 bg-black text-white px-6 py-3 rounded-full font-black">Post Your First Trip</Link>
+          </div>
+        ) : (
+          <div className="mt-6 grid gap-4">
+            {trips.map((t) => (
+              <div key={t.id} className="bg-white rounded-[24px] border border-black/10 p-6 flex justify-between items-center">
                 <div>
-                  <p className="font-extrabold text-gray-900 text-[16px] capitalize">{t.from} → {t.to}</p>
-                  <p className="text-[13px] text-gray-600 mt-1 font-medium">
-                    {t.date} at {t.time} • {t.seats} seats • MK {t.seatPrice}
-                  </p>
-                  <p className="text-[11px] text-gray-400 mt-1">ID: {String(t.id).slice(0,8)}...</p>
+                  <div className="font-black text-[18px]">{t.from_city} → {t.to_city}</div>
+                  <div className="text-[13px] text-black/60 font-medium mt-1">
+                    {t.date} • {t.time} • {t.seats || 4} seats • MK {t.price}
+                  </div>
+                  <div className="text-[11px] font-bold text-black/40 mt-1 uppercase">{t.status}</div>
                 </div>
-                <button onClick={() => handleDelete(t.id)} className="bg-red-50 text-red-600 hover:bg-red-100 border border-red-100 px-5 py-2.5 rounded-full text-sm font-bold transition">
-                  Delete
-                </button>
+                <button onClick={() => handleDelete(t.id)} className="bg-red-50 text-red-600 px-4 py-2 rounded-full font-bold text-[12px]">Delete</button>
               </div>
-            ))
-          )}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   )
