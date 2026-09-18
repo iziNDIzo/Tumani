@@ -24,26 +24,25 @@ export default function DrivePage(){
     if(!from ||!to ||!price){ setMsg("Please fill From, To and Price"); return }
     setLoading(true)
     setMsg("")
+    const tripDate = date? date : new Date().toISOString().split('T')[0]
+
     const { error } = await supabase.from('trips').insert({
-      driver_id: driver.user_id,
-      from_location: from,
-      to_location: to,
-      departure_date: date || new Date().toISOString(),
+      from_city: from,
+      to_city: to,
+      date: tripDate,
+      time: "08:00",
       price: Number(price),
-      driver_name: driver.full_name,
+      driver_id: driver.user_id,
       vehicle_type: driver.vehicle_type,
       registration_number: driver.registration_number,
-      phone: driver.phone,
-      whatsapp: driver.whatsapp || driver.phone,
       status: 'active'
     })
     if(error) setMsg("❌ "+error.message)
     else {
-      setMsg("✅ Trip posted! Go check Find Trips")
+      setMsg("✅ Trip posted!")
       setFrom(""); setTo(""); setPrice(""); setDate("")
     }
     setLoading(false)
-    setTimeout(()=>setMsg(""),5000)
   }
 
   if(!driver) return <div className="p-10 font-black">Loading...</div>
@@ -58,7 +57,7 @@ export default function DrivePage(){
 
         <div className="bg-white rounded-[32px] border border-black/10 p-6 md:p-10 shadow-[0_10px_40px_rgba(0,0,0,0.06)]">
           <h2 className="font-black text-[20px]">Post New Trip</h2>
-          <p className="text-[13px] text-black/50 font-medium mt-1">This trip will be visible to passengers on Find Trips</p>
+          <p className="text-[13px] text-black/50 font-medium mt-1">This trip will be visible to passengers</p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8">
             <input value={from} onChange={e=>setFrom(e.target.value)} placeholder="From e.g. Mchinji" className="h-[56px] px-6 rounded-full border-2 border-black font-bold outline-none" />
@@ -73,16 +72,13 @@ export default function DrivePage(){
 
           {msg && <div className="mt-4 font-bold text-[13px] p-4 rounded-2xl bg-black text-white text-center">{msg}</div>}
 
-          {/* THIS IS THE BUTTON YOU WERE MISSING */}
           <button
             onClick={postTrip}
             disabled={loading}
-            className="mt-8 w-full h-[64px] bg-[#1a73e8] hover:bg-black text-white rounded-full font-black text-[17px] disabled:opacity-50 transition-colors"
+            className="mt-8 w-full h-[64px] bg-[#1a73e8] hover:bg-black text-white rounded-full font-black text-[17px] disabled:opacity-50"
           >
             {loading? "Posting..." : "Post Trip →"}
           </button>
-
-          <p className="text-center text-[11px] text-black/40 font-bold mt-4">Trip appears instantly on Find Trips</p>
         </div>
       </div>
     </div>
