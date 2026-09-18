@@ -15,52 +15,29 @@ export default function AuthPage(){
   const back = () => { setErrorMsg(""); setStep(s=>Math.max(1,s-1)) }
 
 const handleCreate = async () => {
-    if(!form.email ||!form.password || form.password.length < 6){
-      setErrorMsg("Please enter valid email and password (min 6 chars)")
-      return
-    }
-    setLoading(true); setErrorMsg("")
-    try{
-      const { data: authData, error: authError } = await supabase.auth.signUp({
-        email: form.email, password: form.password,
-        options: { data: { full_name: form.name, role: 'driver' } }
-      })
-      if(authError) throw authError
+  setLoading(true); setErrorMsg("")
+  try{
+    const { data, error } = await supabase.auth.signUp({
+      email: form.email, password: form.password,
+      options: { data: { full_name: form.name, role: 'driver' } }
+    })
+    if(error) throw error
+    const userId = data.user?.id
+    if(!userId) throw new Error("Enable email confirm OFF in Supabase Auth settings")
 
-      const userId = authData.user?.id
-      if(!userId) throw new Error("No user ID — check if email confirmation is required in Supabase > Auth > Settings. Disable it for now.")
+    const { error: dErr } = await supabase.from('drivers').insert({
+      id: userId, user_id: userId, full_name: form.name,
+      phone: form.phone, whatsapp: form.whatsapp,
+      vehicle_type: form.vehicle, registration_number: form.reg,
+      email: form.email, verified: false
+    })
+    if(dErr) throw dErr
 
-      // 1. Insert into drivers (your Admin table)
-      const { error: driverErr } = await supabase.from('drivers').insert({
-        id: userId, 
-        user_id: userId, // <-- YOU WERE MISSING THIS!
-        full_name: form.name, 
-        phone: form.phone,
-        whatsapp: form.whatsapp, 
-        vehicle_type: form.vehicle,
-        registration_number: form.reg, 
-        email: form.email, 
-        verified: false,
-      })
-      if(driverErr) throw driverErr
-
-      // 2. ALSO insert/update profiles so you don't lose drivers
-      await supabase.from('profiles').upsert({
-        id: userId,
-        full_name: form.name,
-        phone: form.phone,
-        role: 'driver',
-        verified: false
-      }, { onConflict: 'id' })
-
-      setSuccess(true)
-      setTimeout(()=> router.push("/drive/pending"), 2000)
-
-    } catch(e:any){
-      console.error(e)
-      setErrorMsg(e.message || "Failed to create account. Try again.")
-    } finally{ setLoading(false) }
-  }
+    setSuccess(true)
+    setTimeout(()=> router.push("/drive/pending"), 1500)
+  } catch(e:any){ setErrorMsg(e.message) }
+  finally{ setLoading(false) }
+}
 
   if(success){
     return (
