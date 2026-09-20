@@ -85,6 +85,19 @@ export default function DriverProfile(){
         ))}
         {trips.length === 0 && <p className="text-[13px] text-black/60">No active trips</p>}
       </div>
+      <h2 className="font-black mt-10 text-lg">Reviews ⭐ 4.9</h2>
+<div className="mt-3 space-y-3">
+  <div className="bg-white border rounded-[20px] p-4">
+    <div className="flex justify-between"><span className="font-black text-[13px]">Chifundo B.</span><span className="text-[11px]">⭐⭐⭐⭐⭐</span></div>
+    <p className="text-[13px] mt-1 text-black/70">"On time, car clean, very respectful. Best Lilongwe-Zomba driver!"</p>
+    <p className="text-[11px] mt-1 text-black/40">2 days ago • Kasungu → Zomba</p>
+  </div>
+  <div className="bg-white border rounded-[20px] p-4">
+    <div className="flex justify-between"><span className="font-black text-[13px]">Grace M.</span><span className="text-[11px]">⭐⭐⭐⭐⭐</span></div>
+    <p className="text-[13px] mt-1 text-black/70">"Felt safe, WhatsApp response fast. Will book again."</p>
+    <p className="text-[11px] mt-1 text-black/40">1 week ago • Kasungu → Zomba</p>
+  </div>
+</div>
     </main>
   )
 }
