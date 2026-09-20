@@ -10,13 +10,19 @@ export default function HomePage() {
     <div className="min-h-screen bg-[#fcfaf8] text-black selection:bg-black selection:text-white">
       {/* HEADER */}
       <header className="sticky top-0 z-50 bg-[#fcfaf8]/80 backdrop-blur-xl border-b border-black/[0.06]">
-             <div className="flex items-center gap-2 md:gap-3">
+        <div className="max-w-[1280px] mx-auto px-4 md:px-6 h-[64px] md:h-[72px] flex items-center justify-between">
+          <Link href="/" className="flex items-center gap-2.5">
+            <div className="w-9 h-9 rounded-full bg-[#0a84ff] grid place-items-center text-white font-black text-[16px]">T</div>
+            <span className="font-black text-[18px] tracking-tight">Tumani</span>
+          </Link>
+          <div className="flex items-center gap-2 md:gap-3">
             <Link href="/post" className="hidden md:grid h-[40px] px-5 place-items-center rounded-full bg-[#0a84ff] text-white font-black text-[13px]">+ Post Trip</Link>
             <Link href="/marketplace" className="hidden md:grid h-[40px] px-5 place-items-center rounded-full bg-black text-white font-black text-[13px]">Find Trips</Link>
             <Link href="/post" className="md:hidden h-[38px] px-3 grid place-items-center rounded-full bg-[#0a84ff] text-white font-black text-[13px]">+ Post</Link>
             <Link href="/marketplace" className="md:hidden h-[38px] px-4 grid place-items-center rounded-full bg-black text-white font-black text-[13px]">Find</Link>
-            <Link href="/driver/login" className="h-[38px] md:h-[40px] px-4 md:px-5 grid place-items-center rounded-full border-[1.5px] border-black font-black text-[12px] md:text-[13px]">Login</Link>
+            <Link href="/driver/login" className="h-[38px] md:h-[40px] px-3 md:px-5 grid place-items-center rounded-full border-[1.5px] border-black font-black text-[12px] md:text-[13px]">Login</Link>
           </div>
+        </div>
       </header>
 
       {/* HERO */}
@@ -38,18 +44,19 @@ export default function HomePage() {
             </p>
 
             {/* Search */}
-                        <div className="mt-4 flex gap-2">
-              <Link href="/post" className="flex-1 md:flex-none h-[48px] px-6 rounded-full bg-black text-white grid place-items-center font-black text-[14px]">Post a trip → Get bookings</Link>
-              <Link href="/marketplace" className="hidden md:grid h-[48px] px-6 rounded-full bg-white border border-black/10 place-items-center font-black text-[14px]">Browse 8 trips</Link>
-            </div>
             <div className="mt-6 md:mt-8 bg-white border border-black/10 rounded-[20px] md:rounded-full p-2 flex flex-col md:flex-row gap-2 shadow-[0_20px_60px_-20px_rgba(0,0,0,0.15)]">
-              <div className="flex-1 flex items-center bg-[#f5f3ff] md:bg-[#f5f3ff] rounded-[14px] md:rounded-full px-4 h-[48px]">
+              <div className="flex-1 flex items-center bg-[#f5f3ff] rounded-[14px] md:rounded-full px-4 h-[48px]">
                 <input value={from} onChange={e=>setFrom(e.target.value)} placeholder="Where from? e.g. Salima" className="w-full bg-transparent outline-none font-bold text-[14px] placeholder:text-black/40" />
               </div>
               <div className="flex-1 flex items-center bg-[#f5f3ff] rounded-[14px] md:rounded-full px-4 h-[48px]">
                 <input value={to} onChange={e=>setTo(e.target.value)} placeholder="Where to? e.g. Lilongwe" className="w-full bg-transparent outline-none font-bold text-[14px] placeholder:text-black/40" />
               </div>
               <Link href={`/marketplace?from=${from}&to=${to}`} className="h-[48px] md:w-[132px] rounded-[14px] md:rounded-full bg-black text-white grid place-items-center font-black text-[14px]">Search</Link>
+            </div>
+
+            <div className="mt-4 flex flex-wrap gap-3">
+              <Link href="/post" className="h-[48px] px-7 rounded-full bg-black text-white grid place-items-center font-black text-[14px]">Post a trip → Get bookings</Link>
+              <Link href="/marketplace" className="h-[48px] px-7 rounded-full bg-white border-[1.5px] border-black grid place-items-center font-black text-[14px]">Browse 8 trips</Link>
             </div>
 
             <div className="mt-4 flex flex-wrap gap-2 text-[11px] font-bold">
@@ -65,7 +72,7 @@ export default function HomePage() {
               <div className="w-10 h-10 rounded-[12px] bg-[#fef3c7] grid place-items-center text-[20px]">📦</div>
               <h3 className="mt-4 font-black text-[16px]">Send Parcel</h3>
               <p className="mt-2 text-[13px] leading-[1.5] text-black/60 font-medium">From documents to packages. Business verified customers get tracking codes.</p>
-              <Link href="/parcel/new" className="mt-4 inline-block font-black text-[12px] underline">Post an errand →</Link>
+              <Link href="/post" className="mt-4 inline-block font-black text-[12px] underline">Post a trip to carry →</Link>
             </div>
             <div className="bg-white rounded-[24px] border border-black/10 p-5 md:p-6">
               <div className="w-10 h-10 rounded-[12px] bg-[#dcfce7] grid place-items-center text-[20px]">🚗</div>
@@ -81,8 +88,11 @@ export default function HomePage() {
                 </div>
                 <div className="w-10 h-10 rounded-full bg-white/10 grid place-items-center">→</div>
               </div>
-              <p className="mt-4 text-[13px] leading-[1.5] text-white/60 font-medium">Post: &quot;Going to Blantyre, 3 spaces left&quot;. Accept errands like airport pickups. Get paid.</p>
-              <Link href="/driver/register" className="mt-5 h-[44px] rounded-full bg-white text-black grid place-items-center font-black text-[13px]">Apply as Driver</Link>
+              <p className="mt-4 text-[13px] leading-[1.5] text-white/60 font-medium">Post: &quot;Going to Blantyre, 3 spaces left&quot;. Accept errands like airport pickups. Get paid via WhatsApp.</p>
+              <div className="mt-5 grid grid-cols-2 gap-2">
+                <Link href="/post" className="h-[44px] rounded-full bg-white text-black grid place-items-center font-black text-[13px]">Post Trip Now</Link>
+                <Link href="/driver/register" className="h-[44px] rounded-full bg-white/10 text-white border border-white/20 grid place-items-center font-black text-[13px]">Apply as Driver</Link>
+              </div>
             </div>
           </div>
         </div>
@@ -107,11 +117,11 @@ export default function HomePage() {
             </div>
           </div>
           <div className="bg-[#0a84ff] text-white rounded-[28px] p-6 md:p-8">
-            <p className="font-black text-[48px] leading-[0.9]">{`8+`}</p>
+            <p className="font-black text-[48px] leading-[0.9]">8+</p>
             <p className="mt-2 font-bold text-[13px]">Verified trips live now</p>
             <div className="mt-6 space-y-2">
-              <div className="flex justify-between text-[11px] font-black bg-white/15 rounded-full px-3 py-2"><span>Phalombe → Salima</span><span>MK 200k</span></div>
-              <div className="flex justify-between text-[11px] font-black bg-white/15 rounded-full px-3 py-2"><span>Salima → Blantyre</span><span>MK 35k</span></div>
+              <div className="flex justify-between text-[11px] font-black bg-white/15 rounded-full px-3 py-2"><span>Lilongwe → Blantyre</span><span>MK 25k</span></div>
+              <div className="flex justify-between text-[11px] font-black bg-white/15 rounded-full px-3 py-2"><span>Lilongwe → Mzuzu</span><span>MK 30k</span></div>
             </div>
             <Link href="/marketplace" className="mt-6 block h-[44px] rounded-full bg-white text-black grid place-items-center font-black text-[13px]">View Marketplace</Link>
           </div>
