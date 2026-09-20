@@ -93,8 +93,13 @@ function MarketplaceContent(){
           </div>
         ) : (
           <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-            {filtered.map(t=>(
-              <div key={t.id} className="bg-white border border-black/10 rounded-[24px] p-5 flex flex-col justify-between">
+          {filtered.map(t=>{
+  const isNew = t.created_at && new Date(t.created_at) > new Date(Date.now() - 24*60*60*1000)
+  return (
+  <div key={t.id} className=" bg-white border border-black/10 rounded-[24px] p-5 relative">
+    {isNew && <span className="absolute -top-2 -right-2 bg-[#0a84ff] text-white text-[10px] font-black px-3 py-1 rounded-full animate-pulse z-10">NEW 🔥</span>}
+    <div>
+      <div className="flex flex-col justify-between">
                 <div>
                   <div className="flex justify-between items-center">
                     <div className="flex items-center gap-2">
@@ -115,7 +120,10 @@ function MarketplaceContent(){
                   <a href={`https://wa.me/${(t.drivers?.phone||'265').replace(/[^0-9]/g,'')}?text=Hi! Tumani ride ${t.from_city} to ${t.to_city}`} target="_blank" className="h-[40px] px-5 rounded-full bg-[#22c55e] text-white font-black text-[12px] grid place-items-center">WhatsApp</a>
                 </div>
               </div>
-            ))}
+            </div>
+          </div>
+          )
+          })}
           </div>
         )}
       </main>
