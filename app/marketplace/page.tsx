@@ -74,7 +74,7 @@ if(bData) setBookingsToday(bData.length)
           <div>
             <h1 className="font-black text-[28px] md:text-[36px] tracking-tight leading-[0.9]">Verified trips across Malawi</h1>
             <p className="mt-2 text-[13px] font-medium text-black/60">{filtered.length} rides available • Trusted drivers only</p>
-            {bookingsToday > 0 && (
+           {bookingsToday >= 0 && (
   <div className="mt-3 bg-black text-white inline-flex items-center gap-2 px-4 py-2 rounded-full text-[12px] font-black">
     <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
     🔥 {bookingsToday} people booked via WhatsApp today
