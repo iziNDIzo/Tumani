@@ -117,22 +117,8 @@ function MarketplaceContent(){
                 </div>
                 <div className="mt-5 flex items-center justify-between">
                   <p className="font-black text-[20px] tracking-tight">MK {Number(t.price).toLocaleString()}</p>
-                 <div className="flex gap-2">
-  <a
-    href={`https://wa.me/${t.drivers?.phone?.replace(/\D/g,'')}?text=Hi! Booking ${t.from_city} to ${t.to_city} on ${t.date} via Tumani`}
-    target="_blank"
-    className="flex-1 h-[44px] rounded-full bg-[#25D366] text-white grid place-items-center font-black text-[13px]"
-  >
-    WhatsApp
-  </a>
-  <a
-    href={`https://wa.me/?text=${encodeURIComponent(`🔥 NEW on Tumani: ${t.from_city} → ${t.to_city} | ${t.date} | MK ${t.price} | ${t.seats} seats | Book: tumani.vercel.app/marketplace`)}`}
-    target="_blank"
-    className="w-[44px] h-[44px] rounded-full bg-black text-white grid place-items-center font-black"
-  >
-    ↗
-  </a>
-</div> </div>
+                  <a href={`https://wa.me/${(t.drivers?.phone||'265').replace(/[^0-9]/g,'')}?text=Hi! Tumani ride ${t.from_city} to ${t.to_city}`} target="_blank" className="h-[40px] px-5 rounded-full bg-[#22c55e] text-white font-black text-[12px] grid place-items-center">WhatsApp</a>
+                </div>
               </div>
             </div>
           </div>
