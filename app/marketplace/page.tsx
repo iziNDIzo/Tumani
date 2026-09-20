@@ -119,7 +119,7 @@ if(bData) setBookingsToday(bData.length)
                 <div>
                   <div className="flex justify-between items-center">
                     <div className="flex items-center gap-2">
-                      <div className="w-7 h-7 rounded-full bg-black text-white grid place-items-center font-black text-[11px]">{(t.drivers?.full_name?.[0]||'T')}</div>
+               
                      <a href={`/driver/${t.driver_id}`} className="flex items-center gap-2 hover:opacity-60">
   <div className="w-7 h-7 rounded-full bg-black text-white grid place-items-center font-black text-[12px]">T</div>
   <p className="font-black text-[12px]">{t.drivers?.full_name || 'Verified Driver'}</p>
