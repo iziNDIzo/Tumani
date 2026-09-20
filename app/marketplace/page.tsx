@@ -109,26 +109,20 @@ if(bData) setBookingsToday(bData.length)
           </div>
         ) : (
           <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-{filtered.sort((a:any,b:any)=> new Date(b.created_at).getTime() - new Date(a.created_at).getTime()).map((t:any, index:number)=>{
+{[...filtered].sort((a:any,b:any)=> new Date(b.created_at).getTime() - new Date(a.created_at).getTime()).map((t:any, index:number)=>{
   const isNew = index === 0 // only the newest trip gets the badge
   return (
-  <div key={t.id} className=" bg-white border border-black/10 rounded-[24px] p-5 relative">
-    {isNew && <span className="absolute -top-2 -right-2 bg-[#0a84ff] text-white text-[10px] font-black px-3 py-1 rounded-full animate-pulse z-10">NEW 🔥</span>}
-    <div>
-      <div className="flex flex-col justify-between">
-                <div>
-                  <div className="flex justify-between items-center">
-                    <div className="flex items-center gap-2">
-               
-                     <a href={`/driver/${t.driver_id}`} className="flex items-center gap-2 hover:opacity-60">
-  <div className="w-7 h-7 rounded-full bg-black text-white grid place-items-center font-black text-[12px]">T</div>
-  <p className="font-black text-[12px]">{t.drivers?.full_name || 'Verified Driver'}</p>
-  <span className="text-[10px]">✓</span>
-</a>
-                      <span className="text-[10px]">✓</span>
-                    </div>
-                    <span className="text-[9px] font-black tracking-widest bg-[#dcfce7] text-[#166534] px-2.5 py-1 rounded-full">VERIFIED</span>
-                  </div>
+ <div key={t.id} className="bg-white border border-black/10 rounded-[24px] p-5 relative">
+  {isNew && <span className="absolute -top-2 -right-2 bg-[#0a84ff] text-white text-[10px] font-black px-3 py-1 rounded-full">NEW 🔥</span>}
+  <div>
+    <div className="flex justify-between items-center">
+      <a href={`/driver/${t.driver_id}`} className="flex items-center gap-2 hover:opacity-60">
+        <div className="w-7 h-7 rounded-full bg-black text-white grid place-items-center font-black text-[11px]">T</div>
+        <p className="font-black text-[12px]">{t.drivers?.full_name || 'Verified Driver'}</p>
+        <span className="text-[10px]">✓</span>
+      </a>
+      <span className="text-[9px] font-black tracking-widest bg-[#dcfce7] text-[#166534] px-2.5 py-1 rounded-full">VERIFIED</span>
+    </div>
                   <p className="mt-4 font-black text-[18px] leading-[1.1] tracking-tight">{t.from_city} → {t.to_city}</p>
                   <div className="mt-3 flex flex-wrap gap-2">
                     <span className="bg-[#f5f3ff] text-[11px] font-bold px-2.5 py-1 rounded-full">{t.date || 'Today'}</span>
@@ -147,8 +141,6 @@ if(bData) setBookingsToday(bData.length)
 </a>
                 </div>
               </div>
-            </div>
-          </div>
           )
           })}
           </div>
