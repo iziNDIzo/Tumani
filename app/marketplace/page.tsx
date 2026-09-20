@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation"
 import { createClient } from "@supabase/supabase-js"
 
 function MarketplaceContent(){
+  const [bookingsToday, setBookingsToday] = useState(0)
   const [trips, setTrips] = useState<any[]>([])
   const [filtered, setFiltered] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
@@ -12,6 +13,11 @@ function MarketplaceContent(){
   const [toFilter, setToFilter] = useState("")
   const searchParams = useSearchParams()
   const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!)
+
+  async function logBooking(tripId: string) {
+    const { error } = await supabase.from('bookings').insert({ trip_id: tripId })
+    if (!error) setBookingsToday(count => count + 1)
+  }
 
   useEffect(()=>{
     setFromFilter(searchParams.get('from') || "")
@@ -35,6 +41,10 @@ function MarketplaceContent(){
         setTrips(data)
         setFiltered(data)
       }
+      // fetch bookings today
+const today = new Date().toISOString().split('T')[0]
+const { data: bData } = await supabase.from('bookings').select('id').gte('created_at', today)
+if(bData) setBookingsToday(bData.length)
       setLoading(false)
     }
     load()
@@ -64,6 +74,12 @@ function MarketplaceContent(){
           <div>
             <h1 className="font-black text-[28px] md:text-[36px] tracking-tight leading-[0.9]">Verified trips across Malawi</h1>
             <p className="mt-2 text-[13px] font-medium text-black/60">{filtered.length} rides available • Trusted drivers only</p>
+            {bookingsToday > 0 && (
+  <div className="mt-3 bg-black text-white inline-flex items-center gap-2 px-4 py-2 rounded-full text-[12px] font-black">
+    <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+    🔥 {bookingsToday} people booked via WhatsApp today
+  </div>
+)}
           </div>
           <div className="flex gap-2">
             <span className="bg-white border border-black/10 px-3 py-1.5 rounded-full text-[11px] font-black">LIVE NOW</span>
@@ -117,7 +133,14 @@ function MarketplaceContent(){
                 </div>
                 <div className="mt-5 flex items-center justify-between">
                   <p className="font-black text-[20px] tracking-tight">MK {Number(t.price).toLocaleString()}</p>
-                  <a href={`https://wa.me/${(t.drivers?.phone||'265').replace(/[^0-9]/g,'')}?text=Hi! Tumani ride ${t.from_city} to ${t.to_city}`} target="_blank" className="h-[40px] px-5 rounded-full bg-[#22c55e] text-white font-black text-[12px] grid place-items-center">WhatsApp</a>
+                 <a
+  onClick={()=> logBooking(t.id)}
+  href={`https://wa.me/${t.drivers?.phone?.replace(/\D/g,'')}?text=Hi! Booking ${t.from_city} to ${t.to_city} on ${t.date} via Tumani`}
+  target="_blank"
+  className="flex-1 h-[44px] rounded-full bg-[#25D366] text-white grid place-items-center font-black text-[13px]"
+>
+  WhatsApp
+</a>
                 </div>
               </div>
             </div>
