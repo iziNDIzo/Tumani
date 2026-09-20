@@ -9,11 +9,13 @@ export default function Marketplace(){
 
   useEffect(()=>{
     async function load(){
-      const { data: tripsData } = await supabase
-       .from('trips')
-       .select('*, drivers(*)')
-       .eq('status','active')
-       .order('created_at', {ascending:false})
+      // FIX: removed status filter so we see ALL trips
+      const { data: tripsData, error } = await supabase
+      .from('trips')
+      .select('*, drivers(*)')
+      .order('created_at', {ascending:false})
+
+      console.log("TRIPS:", tripsData, "ERROR:", error)
       if(tripsData) setTrips(tripsData)
 
       const { data: reviews } = await supabase.from('reviews').select('driver_id, rating')
@@ -46,7 +48,7 @@ export default function Marketplace(){
           const avg = r?.avg || "5.0"
           const count = r?.count || 0
           return (
-            <div key={t.id} className="bg-white border border-black/10 rounded-[20px] p-4 flex justify-between items-center hover:border-blue-500 transition">
+            <div key={t.id} className="bg-white border border-black/10 rounded-[20px] p-4 flex justify-between items-center hover:border-blue-600 transition">
               <div>
                 <div className="flex items-center gap-2">
                   <div className="w-8 h-8 bg-blue-600 text-white rounded-full grid place-items-center font-black text-[12px]">
@@ -69,7 +71,7 @@ export default function Marketplace(){
             </div>
           )
         })}
-        {trips.length===0 && <p className="text-center mt-10 opacity-60 font-bold">No active trips right now</p>}
+        {trips.length===0 && <p className="text-center mt-10 opacity-60 font-bold">No active trips right now — check console (F12)</p>}
       </div>
     </main>
   )
