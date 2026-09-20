@@ -93,9 +93,8 @@ function MarketplaceContent(){
           </div>
         ) : (
           <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-          {filtered.map(t=>{
- const isNew = t.created_at && new Date(t.created_at) > new Date(Date.now() - 6*60*60*1000)
- 
+{filtered.sort((a:any,b:any)=> new Date(b.created_at).getTime() - new Date(a.created_at).getTime()).map((t:any, index:number)=>{
+  const isNew = index === 0 // only the newest trip gets the badge
   return (
   <div key={t.id} className=" bg-white border border-black/10 rounded-[24px] p-5 relative">
     {isNew && <span className="absolute -top-2 -right-2 bg-[#0a84ff] text-white text-[10px] font-black px-3 py-1 rounded-full animate-pulse z-10">NEW 🔥</span>}
