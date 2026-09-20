@@ -1,155 +1,76 @@
 "use client"
-import { useEffect, useState, Suspense } from "react"
+import { useEffect, useState } from "react"
+import { supabase } from "../../lib/supabaseClient"
 import Link from "next/link"
-import { useSearchParams } from "next/navigation"
-import { createClient } from "@supabase/supabase-js"
 
-function MarketplaceContent(){
-  const [bookingsToday, setBookingsToday] = useState(0)
+export default function Marketplace(){
   const [trips, setTrips] = useState<any[]>([])
-  const [filtered, setFiltered] = useState<any[]>([])
-  const [loading, setLoading] = useState(true)
-  const [fromFilter, setFromFilter] = useState("")
-  const [toFilter, setToFilter] = useState("")
-  const searchParams = useSearchParams()
-  const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!)
-
-  async function logBooking(tripId: string) {
-    const { error } = await supabase.from('bookings').insert({ trip_id: tripId })
-    if (!error) setBookingsToday(count => count + 1)
-  }
-
-  useEffect(()=>{
-    setFromFilter(searchParams.get('from') || "")
-    setToFilter(searchParams.get('to') || "")
-  },[searchParams])
+  const [ratings, setRatings] = useState<Record<string, {avg: string, count: number}>>({})
 
   useEffect(()=>{
     async function load(){
-      // Try with drivers join first
-      const { data, error } = await supabase.from('trips').select('*, drivers(full_name, phone)').order('created_at',{ascending:false})
+      const { data: tripsData } = await supabase
+       .from('trips')
+       .select('*, drivers(*)')
+       .eq('status','active')
+       .order('created_at', {ascending:false})
+      if(tripsData) setTrips(tripsData)
 
-      if(error ||!data || data.length===0){
-        console.log("Join failed, trying trips only:", error)
-        // Fallback: trips only (this gave you 8 rides before)
-        const { data: tripsOnly } = await supabase.from('trips').select('*').order('created_at',{ascending:false})
-        if(tripsOnly){
-          setTrips(tripsOnly)
-          setFiltered(tripsOnly)
-        }
-      } else {
-        setTrips(data)
-        setFiltered(data)
+      const { data: reviews } = await supabase.from('reviews').select('driver_id, rating')
+      if(reviews){
+        const map: any = {}
+        reviews.forEach((r:any)=>{
+          if(!map[r.driver_id]) map[r.driver_id] = []
+          map[r.driver_id].push(r.rating)
+        })
+        const calculated: any = {}
+        Object.keys(map).forEach(driverId=>{
+          const arr = map[driverId]
+          const avg = (arr.reduce((a:number,b:number)=>a+b,0)/arr.length).toFixed(1)
+          calculated[driverId] = { avg, count: arr.length }
+        })
+        setRatings(calculated)
       }
-      // fetch bookings today
-const today = new Date().toISOString().split('T')[0]
-const { data: bData } = await supabase.from('bookings').select('id').gte('created_at', today)
-if(bData) setBookingsToday(bData.length)
-      setLoading(false)
     }
     load()
   },[])
 
-  useEffect(()=>{
-    let f = trips
-    if(fromFilter) f = f.filter(t => t.from_city?.toLowerCase().includes(fromFilter.toLowerCase()))
-    if(toFilter) f = f.filter(t => t.to_city?.toLowerCase().includes(toFilter.toLowerCase()))
-    setFiltered(f)
-  },[fromFilter, toFilter, trips])
-
-  return(
-    <div className="min-h-screen bg-[#fcfaf8] text-black">
-      <header className="sticky top-0 z-50 bg-[#fcfaf8]/80 backdrop-blur-xl border-b border-black/[0.06]">
-        <div className="max-w-[1280px] mx-auto px-4 md:px-6 h-[64px] flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-full bg-[#0a84ff] grid place-items-center text-white font-black">T</div>
-            <span className="font-black text-[18px] tracking-tight">Tumani</span>
-          </Link>
-          <Link href="/" className="h-[40px] px-5 grid place-items-center rounded-full border-[1.5px] border-black font-black text-[13px]">Home</Link>
-        </div>
-      </header>
-
-      <main className="max-w-[1280px] mx-auto px-4 md:px-6 py-6 md:py-10">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-          <div>
-            <h1 className="font-black text-[28px] md:text-[36px] tracking-tight leading-[0.9]">Verified trips across Malawi</h1>
-            <p className="mt-2 text-[13px] font-medium text-black/60">{filtered.length} rides available • Trusted drivers only</p>
-           {bookingsToday >= 0 && (
-  <div className="mt-3 bg-black text-white inline-flex items-center gap-2 px-4 py-2 rounded-full text-[12px] font-black">
-    <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
-    🔥 {bookingsToday} people booked via WhatsApp today
-  </div>
-)}
-          </div>
-          <div className="flex gap-2">
-            <span className="bg-white border border-black/10 px-3 py-1.5 rounded-full text-[11px] font-black">LIVE NOW</span>
-            <span className="bg-black text-white px-3 py-1.5 rounded-full text-[11px] font-black">{trips.length} TOTAL</span>
-          </div>
-        </div>
-
-        <div className="mt-6 bg-white border border-black/10 rounded-[20px] md:rounded-full p-2 flex flex-col md:flex-row gap-2 shadow-sm">
-          <div className="flex-1 flex items-center bg-[#f5f3ff] rounded-[14px] md:rounded-full px-4 h-[46px]">
-            <input value={fromFilter} onChange={e=>setFromFilter(e.target.value)} placeholder="From? e.g. Salima" className="w-full bg-transparent outline-none font-bold text-[13px] placeholder:text-black/40" />
-          </div>
-          <div className="flex-1 flex items-center bg-[#f5f3ff] rounded-[14px] md:rounded-full px-4 h-[46px]">
-            <input value={toFilter} onChange={e=>setToFilter(e.target.value)} placeholder="To? e.g. Lilongwe" className="w-full bg-transparent outline-none font-bold text-[13px] placeholder:text-black/40" />
-          </div>
-          <div className="h-[46px] md:w-[120px] rounded-[14px] md:rounded-full bg-black text-white grid place-items-center font-black text-[13px]">Filter</div>
-        </div>
-
-        {loading? (
-          <div className="mt-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {[1,2,3,4,5,6].map(i=><div key={i} className="h-[200px] bg-white border border-black/10 rounded-[24px] animate-pulse"></div>)}
-          </div>
-        ) : filtered.length===0? (
-          <div className="mt-16 text-center bg-white border border-black/10 rounded-[28px] p-10">
-            <p className="font-black text-[18px]">No rides found</p>
-            <p className="mt-2 text-[13px] text-black/60 font-medium">RLS is blocking data. Run SQL fix in Supabase.</p>
-            <button onClick={()=>{setFromFilter(""); setToFilter("")}} className="mt-4 h-[40px] px-6 rounded-full bg-black text-white font-black text-[12px]">Show all</button>
-          </div>
-        ) : (
-          <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-{[...filtered].sort((a:any,b:any)=> new Date(b.created_at).getTime() - new Date(a.created_at).getTime()).map((t:any, index:number)=>{
-  const isNew = index === 0 // only the newest trip gets the badge
   return (
- <div key={t.id} className="bg-white border border-black/10 rounded-[24px] p-5 relative">
-  {isNew && <span className="absolute -top-2 -right-2 bg-[#0a84ff] text-white text-[10px] font-black px-3 py-1 rounded-full">NEW 🔥</span>}
-  <div>
-    <div className="flex justify-between items-center">
-      <a href={`/driver/${t.driver_id}`} className="flex items-center gap-2 hover:opacity-60">
-        <div className="w-7 h-7 rounded-full bg-black text-white grid place-items-center font-black text-[11px]">T</div>
-        <p className="font-black text-[12px]">{t.drivers?.full_name || 'Verified Driver'}</p>
-        <span className="text-[10px]">✓</span>
-      </a>
-      <span className="text-[9px] font-black tracking-widest bg-[#dcfce7] text-[#166534] px-2.5 py-1 rounded-full">VERIFIED</span>
-    </div>
-                  <p className="mt-4 font-black text-[18px] leading-[1.1] tracking-tight">{t.from_city} → {t.to_city}</p>
-                  <div className="mt-3 flex flex-wrap gap-2">
-                    <span className="bg-[#f5f3ff] text-[11px] font-bold px-2.5 py-1 rounded-full">{t.date || 'Today'}</span>
-                    <span className="bg-[#f5f3ff] text-[11px] font-bold px-2.5 py-1 rounded-full">{t.seats || 4} seats</span>
-                  </div>
-                </div>
-                <div className="mt-5 flex items-center justify-between">
-                  <p className="font-black text-[20px] tracking-tight">MK {Number(t.price).toLocaleString()}</p>
-                 <a
-  onClick={()=> logBooking(t.id)}
-  href={`https://wa.me/${t.drivers?.phone?.replace(/\D/g,'')}?text=Hi! Booking ${t.from_city} to ${t.to_city} on ${t.date} via Tumani`}
-  target="_blank"
-  className="flex-1 h-[44px] rounded-full bg-[#25D366] text-white grid place-items-center font-black text-[13px]"
->
-  WhatsApp
-</a>
-                </div>
-              </div>
-          )
-          })}
-          </div>
-        )}
-      </main>
-    </div>
-  )
-}
+    <main className="max-w-[720px] mx-auto p-4 pb-20">
+      <h1 className="font-black text-[24px]">Tumani Marketplace</h1>
+      <p className="text-[13px] opacity-60 mt-1">Kasungu ↔ Zomba • Verified drivers only</p>
 
-export default function MarketplacePage(){
-  return <Suspense fallback={<div className="p-10 font-black">Loading Tumani...</div>}><MarketplaceContent /></Suspense>
+      <div className="mt-6 space-y-4">
+        {trips.map(t=>{
+          const r = ratings[t.driver_id]
+          const avg = r?.avg || "5.0"
+          const count = r?.count || 0
+          return (
+            <div key={t.id} className="bg-white border border-black/10 rounded-[20px] p-4 flex justify-between items-center hover:border-blue-500 transition">
+              <div>
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 bg-blue-600 text-white rounded-full grid place-items-center font-black text-[12px]">
+                    {t.drivers?.full_name?.[0] || "T"}
+                  </div>
+                  <Link href={`/driver/${t.driver_id}`} className="font-black text-[14px] hover:text-blue-600">
+                    {t.drivers?.full_name || "Verified Driver"} ✓
+                  </Link>
+                  <span className="bg-blue-600 text-white px-2 py-0.5 rounded-full text-[10px] font-black">
+                    ⭐ {avg} {count>0? `(${count})` : ""}
+                  </span>
+                </div>
+                <div className="mt-2 font-black text-[16px]">{t.from_city} → {t.to_city}</div>
+                <div className="text-[12px] opacity-60 mt-1">{t.date} • {t.seats} seats • MK {t.price?.toLocaleString()}</div>
+              </div>
+              <div className="flex flex-col gap-2">
+                <Link href={`/driver/${t.driver_id}`} className="bg-white border border-blue-600 text-blue-600 px-4 py-2 rounded-full text-[12px] font-black text-center">View</Link>
+                <a href={`https://wa.me/${t.drivers?.phone?.replace(/\D/g,'')}?text=Hi, booking ${t.from_city} to ${t.to_city} on ${t.date}`} target="_blank" className="bg-blue-600 text-white px-5 py-2 rounded-full text-[12px] font-black text-center">Book</a>
+              </div>
+            </div>
+          )
+        })}
+        {trips.length===0 && <p className="text-center mt-10 opacity-60 font-bold">No active trips right now</p>}
+      </div>
+    </main>
+  )
 }
