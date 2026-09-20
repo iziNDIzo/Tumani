@@ -94,7 +94,8 @@ function MarketplaceContent(){
         ) : (
           <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
           {filtered.map(t=>{
-  const isNew = t.created_at && new Date(t.created_at) > new Date(Date.now() - 24*60*60*1000)
+ const isNew = t.created_at && new Date(t.created_at) > new Date(Date.now() - 6*60*60*1000)
+ 
   return (
   <div key={t.id} className=" bg-white border border-black/10 rounded-[24px] p-5 relative">
     {isNew && <span className="absolute -top-2 -right-2 bg-[#0a84ff] text-white text-[10px] font-black px-3 py-1 rounded-full animate-pulse z-10">NEW 🔥</span>}
