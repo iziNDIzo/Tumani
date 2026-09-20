@@ -10,17 +10,13 @@ export default function HomePage() {
     <div className="min-h-screen bg-[#fcfaf8] text-black selection:bg-black selection:text-white">
       {/* HEADER */}
       <header className="sticky top-0 z-50 bg-[#fcfaf8]/80 backdrop-blur-xl border-b border-black/[0.06]">
-        <div className="max-w-[1280px] mx-auto px-4 md:px-6 h-[64px] md:h-[72px] flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-full bg-[#0a84ff] grid place-items-center text-white font-black text-[16px]">T</div>
-            <span className="font-black text-[18px] tracking-tight">Tumani</span>
-          </Link>
-          <div className="flex items-center gap-2 md:gap-3">
+             <div className="flex items-center gap-2 md:gap-3">
+            <Link href="/post" className="hidden md:grid h-[40px] px-5 place-items-center rounded-full bg-[#0a84ff] text-white font-black text-[13px]">+ Post Trip</Link>
             <Link href="/marketplace" className="hidden md:grid h-[40px] px-5 place-items-center rounded-full bg-black text-white font-black text-[13px]">Find Trips</Link>
-            <Link href="/marketplace" className="md:hidden h-[38px] px-4 grid place-items-center rounded-full bg-black text-white font-black text-[13px]">Find Trips</Link>
-            <Link href="/driver/login" className="h-[38px] md:h-[40px] px-4 md:px-5 grid place-items-center rounded-full border-[1.5px] border-black font-black text-[12px] md:text-[13px]">Login as Driver</Link>
+            <Link href="/post" className="md:hidden h-[38px] px-3 grid place-items-center rounded-full bg-[#0a84ff] text-white font-black text-[13px]">+ Post</Link>
+            <Link href="/marketplace" className="md:hidden h-[38px] px-4 grid place-items-center rounded-full bg-black text-white font-black text-[13px]">Find</Link>
+            <Link href="/driver/login" className="h-[38px] md:h-[40px] px-4 md:px-5 grid place-items-center rounded-full border-[1.5px] border-black font-black text-[12px] md:text-[13px]">Login</Link>
           </div>
-        </div>
       </header>
 
       {/* HERO */}
@@ -42,6 +38,10 @@ export default function HomePage() {
             </p>
 
             {/* Search */}
+                        <div className="mt-4 flex gap-2">
+              <Link href="/post" className="flex-1 md:flex-none h-[48px] px-6 rounded-full bg-black text-white grid place-items-center font-black text-[14px]">Post a trip → Get bookings</Link>
+              <Link href="/marketplace" className="hidden md:grid h-[48px] px-6 rounded-full bg-white border border-black/10 place-items-center font-black text-[14px]">Browse 8 trips</Link>
+            </div>
             <div className="mt-6 md:mt-8 bg-white border border-black/10 rounded-[20px] md:rounded-full p-2 flex flex-col md:flex-row gap-2 shadow-[0_20px_60px_-20px_rgba(0,0,0,0.15)]">
               <div className="flex-1 flex items-center bg-[#f5f3ff] md:bg-[#f5f3ff] rounded-[14px] md:rounded-full px-4 h-[48px]">
                 <input value={from} onChange={e=>setFrom(e.target.value)} placeholder="Where from? e.g. Salima" className="w-full bg-transparent outline-none font-bold text-[14px] placeholder:text-black/40" />
