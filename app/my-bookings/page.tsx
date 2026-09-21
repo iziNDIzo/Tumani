@@ -1,9 +1,9 @@
 "use client"
-import { useEffect, useState } from "react"
+import { useEffect, useState, Suspense } from "react"
 import { supabase } from "../../lib/supabaseClient"
 import { useSearchParams } from "next/navigation"
 
-export default function MyBookings(){
+function BookingsList(){
   const params = useSearchParams()
   const phone = params.get('phone') || ""
   const [bookings, setBookings] = useState<any[]>([])
@@ -18,15 +18,24 @@ export default function MyBookings(){
       <a href="/" className="text-[14px]">← Back to Marketplace</a>
       <h1 className="text-[20px] font-black mt-4">My Bookings for {phone}</h1>
       <div className="mt-4 space-y-3">
-        {bookings.length===0 && <p className="text-[14px] text-gray-500">No bookings yet.</p>}
+        {bookings.length===0 && <p className="text-[14px] text-gray-500">No bookings yet. Book a trip first.</p>}
         {bookings.map(b=>(
           <div key={b.id} className="p-4 rounded-xl border bg-white">
-            <p className="text-[13px]">Trip ID: {b.trip_id?.slice(0,8)}</p>
+            <p className="text-[13px]">Trip: {b.trip_id?.slice(0,8)} • Driver: {b.driver_id?.slice(0,8)}</p>
             <p className="text-[14px] font-bold">Status: <span className="text-[#0a84ff]">{b.status}</span></p>
+            <p className="text-[14px]">{b.customer_name} - {b.customer_phone}</p>
             <p className="text-[12px] text-gray-500">{new Date(b.created_at).toLocaleString()}</p>
           </div>
         ))}
       </div>
     </div>
+  )
+}
+
+export default function MyBookingsPage(){
+  return (
+    <Suspense fallback={<div className="p-4">Loading...</div>}>
+      <BookingsList />
+    </Suspense>
   )
 }
