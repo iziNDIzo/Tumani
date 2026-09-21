@@ -1,10 +1,29 @@
 "use client"
 import Link from "next/link"
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import { supabase } from "../lib/supabaseClient"
+import { useRouter } from "next/navigation"
 
 export default function HomePage() {
   const [from, setFrom] = useState("")
   const [to, setTo] = useState("")
+
+    const router = useRouter()
+  const [user, setUser] = useState<any>(null)
+
+  useEffect(()=>{
+    supabase.auth.getSession().then(({data})=> setUser(data.session?.user || null))
+    const { data: listener } = supabase.auth.onAuthStateChange((_e, session)=>{
+      setUser(session?.user || null)
+    })
+    return ()=> listener.subscription.unsubscribe()
+  },[])
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut()
+    setUser(null)
+    router.refresh()
+  }
 
   return (
     <div className="min-h-screen bg-[#fcfaf8] text-black selection:bg-black selection:text-white">
@@ -16,12 +35,19 @@ export default function HomePage() {
             <span className="font-black text-[18px] tracking-tight">Tumani</span>
           </Link>
           <div className="flex items-center gap-2 md:gap-3">
-            <Link href="/post" className="hidden md:grid h-[40px] px-5 place-items-center rounded-full bg-[#0a84ff] text-white font-black text-[13px]">+ Post Trip</Link>
-            <Link href="/marketplace" className="hidden md:grid h-[40px] px-5 place-items-center rounded-full bg-black text-white font-black text-[13px]">Find Trips</Link>
-            <Link href="/post" className="md:hidden h-[38px] px-3 grid place-items-center rounded-full bg-[#0a84ff] text-white font-black text-[13px]">+ Post</Link>
-            <Link href="/marketplace" className="md:hidden h-[38px] px-4 grid place-items-center rounded-full bg-black text-white font-black text-[13px]">Find</Link>
-       <Link href="/auth" className="h-[38px] md:h-[40px] px-3 md:px-5 grid place-items-center rounded-full border-[1.5px] border-black font-black text-[12px] md:text-[13px]">Login</Link>
-          </div>
+        <Link href="/post" className="hidden md:grid h-[40px] px-5 place-items-center rounded-full bg-[#0a84ff] text-white font-black text-[13px]">+ Post Trip</Link>
+        <Link href="/marketplace" className="hidden md:grid h-[40px] px-5 place-items-center rounded-full bg-black text-white font-black text-[13px]">Find Trips</Link>
+        <Link href="/post" className="md:hidden h-[38px] px-3 grid place-items-center rounded-full bg-[#0a84ff] text-white font-black text-[13px]">+ Post</Link>
+        <Link href="/marketplace" className="md:hidden h-[38px] px-4 grid place-items-center rounded-full bg-black text-white font-black text-[13px]">Find</Link>
+        {!user? (
+          <Link href="/auth" className="h-[38px] md:h-[40px] px-3 md:px-5 grid place-items-center rounded-full border-[1.5px] border-black font-black text-[12px] md:text-[13px]">Login</Link>
+        ) : (
+          <>
+            <Link href="/my-bookings?phone=0994961447" className="h-[38px] md:h-[40px] px-3 md:px-5 grid place-items-center rounded-full bg-black text-white font-black text-[12px] md:text-[13px]">My Trips</Link>
+            <button onClick={handleLogout} className="h-[38px] md:h-[40px] px-3 md:px-5 grid place-items-center rounded-full border-[1.5px] border-black/20 font-black text-[12px] md:text-[13px]">Logout</button>
+          </>
+        )}
+      </div>
         </div>
       </header>
 

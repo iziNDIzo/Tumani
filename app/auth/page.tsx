@@ -98,7 +98,7 @@ export default function AuthPage(){
                   <div><label className="text-[11px] font-black tracking-[0.15em] text-black/40">EMAIL ADDRESS</label><input value={form.email} onChange={e=>setForm({...form,email:e.target.value})} placeholder="victor@gmail.com" className="mt-2 w-full h-[56px] px-5 rounded-2xl bg-[#f5f3ff] border border-black/10 outline-none font-bold" /></div>
                   <div><label className="text-[11px] font-black tracking-[0.15em] text-black/40">CREATE PASSWORD</label><input type="password" value={form.password} onChange={e=>setForm({...form,password:e.target.value})} placeholder="min. 6 characters" className="mt-2 w-full h-[56px] px-5 rounded-2xl bg-[#f5f3ff] border border-black/10 outline-none font-bold" /></div>
                   {errorMsg && <div className="bg-red-50 border border-red-200 text-red-600 text-[13px] font-bold p-3 rounded-xl">{errorMsg}</div>}
-                  <button onClick={handleCreate} disabled={loading} className="w-full h-[60px] bg-[#1a73e8] text-white rounded-full font-black text-[16px] disabled:opacity-50">{loading? "Creating account..." : "Create Account & Start Earning →"}</button>
+                  <button onClick={handleCreate} disabled={loading} className="w-full h-[60px] bg-[#0a84ff] text-white rounded-full font-black text-[16px] disabled:opacity-50">{loading? "Creating account..." : "Create Account & Start Earning →"}</button>
                   <button onClick={back} className="w-full text-center text-[13px] font-black text-black/40">← Go back</button>
                 </div>
               </div>
