@@ -16,31 +16,42 @@ function BookingsList(){
       if(saved) setPhone(saved)
     } else {
       setPhone(phoneFromUrl)
+      localStorage.setItem("tumani_last_phone", phoneFromUrl)
     }
   },[phoneFromUrl])
 
+  const fetchBookings = async(p:string)=>{
+    if(!p) { setLoading(false); return }
+    setLoading(true)
+    const { data: bookingsData } = await supabase
+    .from('bookings')
+    .select('*')
+    .eq('customer_phone', p)
+    .order('created_at',{ascending:false})
+
+    let enriched = bookingsData || []
+    if(enriched.length>0){
+      const tripIds = [...new Set(enriched.map((b:any)=>b.trip_id))]
+      const { data: tripsData } = await supabase.from('trips').select('*').in('id', tripIds)
+      const tripMap = Object.fromEntries((tripsData||[]).map((t:any)=>[t.id, t]))
+      enriched = enriched.map((b:any)=> ({...b, trips: tripMap[b.trip_id] || null}))
+    }
+    setBookings(enriched)
+    setLoading(false)
+  }
+
   useEffect(()=>{
-    if(!phone) { setLoading(false); return }
-    (async()=>{
-      setLoading(true)
-      // fetch bookings WITH trip details
-        const { data: bookingsData } = await supabase
-       .from('bookings')
-       .select('*')
-       .eq('customer_phone', phone)
-       .order('created_at',{ascending:false})
-      
-      // try to get trip city names separately
-      let enriched = bookingsData || []
-      if(enriched.length>0){
-        const tripIds = [...new Set(enriched.map((b:any)=>b.trip_id))]
-        const { data: tripsData } = await supabase.from('trips').select('*').in('id', tripIds)
-        const tripMap = Object.fromEntries((tripsData||[]).map((t:any)=>[t.id, t]))
-        enriched = enriched.map((b:any)=> ({...b, trips: tripMap[b.trip_id] || null}))
-      }
-      setBookings(enriched)
-       setLoading(false)
-    })()
+    fetchBookings(phone)
+
+    // LIVE UPDATE - when admin confirms, auto turns green
+    const channel = supabase
+     .channel('bookings-realtime')
+     .on('postgres_changes', {event:'*', schema:'public', table:'bookings', filter:`customer_phone=eq.${phone}`}, ()=>{
+        fetchBookings(phone)
+      })
+     .subscribe()
+
+    return ()=>{ supabase.removeChannel(channel) }
   },[phone])
 
   const cancelBooking = async(id:string)=>{
@@ -59,11 +70,14 @@ function BookingsList(){
   return (
     <div className="max-w-[600px] mx-auto p-4 pb-20">
       <a href="/" className="text-[14px] font-bold opacity-60">← Back to Marketplace</a>
-      <h1 className="text-[22px] font-black mt-4">My Bookings for {phone || "—"}</h1>
+      <div className="flex justify-between items-center mt-4">
+        <h1 className="text-[22px] font-black">My Bookings for {phone || "—"}</h1>
+        <button onClick={()=>fetchBookings(phone)} className="px-3 py-1.5 rounded-full bg-black text-white text-[12px] font-bold">Refresh</button>
+      </div>
       <p className="text-[13px] text-gray-500 mt-1">{bookings.length} trip{bookings.length!==1?'s':''} found</p>
 
    <div className="mt-5 space-y-3">
-  {loading && bookings.length===0 && <p className="text-[14px] text-gray-500">Loading your trips...</p>}
+  {loading && <p className="text-[14px] text-gray-500">Loading your trips...</p>}
   {!loading && bookings.length===0 && <p className="text-[14px] text-gray-500">No bookings yet. Book a trip first.</p>}
         {bookings.map(b=>(
           <div key={b.id} className="p-4 rounded-[16px] border bg-white shadow-sm">
