@@ -14,9 +14,12 @@ export default function Marketplace(){
       setTrips(merged)
     })()
   },[])
-  return (
-    <main className="max-w-[720px] mx-auto p-4 pb-20">
-      <h1 className="font-black text-[24px]">Tumani Marketplace</h1>
+return (
+  <main className="max-w-[720px] mx-auto p-4 pb-20">
+    <a href="/" className="inline-block mb-4 text-[13px] font-bold opacity-60">← Back to Home</a>
+    <div>
+      <h1 className="text-[24px] font-black">Tumani Marketplace</h1>
+    </div>
     <p className="text-[13px] opacity-60">{trips.length} trips • Kasungu ↔ Zomba • Verified drivers only</p>
       <div className="mt-6 space-y-3">
         {trips.map(t=>(
