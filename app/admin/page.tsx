@@ -1,82 +1,112 @@
 "use client"
 import { useEffect, useState } from "react"
-import { supabase } from "../../lib/supabaseClient" // use your lib
+import { supabase } from "../../lib/supabaseClient"
 
-type Tab = "drivers" | "trips" | "parcels"
+type Tab = "drivers" | "trips" | "parcels" | "bookings"
 
 export default function AdminDashboard(){
   const [drivers,setDrivers]=useState<any[]>([])
   const [trips,setTrips]=useState<any[]>([])
   const [parcels,setParcels]=useState<any[]>([])
-  const [tab,setTab]=useState<Tab>("drivers")
+  const [bookings,setBookings]=useState<any[]>([])
+  const [tab,setTab]=useState<Tab>("bookings")
   const [filter,setFilter]=useState<"all"|"pending"|"verified">("all")
   const [selected,setSelected]=useState<any>(null)
   const [viewImg,setViewImg]=useState<string|null>(null)
-  const [deleteTarget,setDeleteTarget]=useState<{id:string, type:string} | null>(null) // no more confirm()
+  const [deleteTarget,setDeleteTarget]=useState<{id:string, type:string} | null>(null)
   const [msg,setMsg]=useState("")
 
-const load = async ()=>{
-  // Read from BOTH places
-  const {data: fromDrivers} = await supabase.from('drivers').select('*').order('created_at',{ascending:false})
-  const {data: fromProfiles} = await supabase.from('profiles').select('*').eq('role','driver').order('created_at',{ascending:false})
-  
-  // Merge — convert profiles format to driver format
-  const converted = (fromProfiles||[]).map((p:any)=>({
-    id: p.id,
-    user_id: p.id,
-    full_name: p.full_name,
-    phone: p.phone,
-    email: p.email || '',
-    vehicle_type: p.vehicle_type || 'N/A',
-    registration_number: p.registration_number || '',
-    verified: p.verified || false,
-    created_at: p.created_at
-  }))
-  
-  const merged = [...(fromDrivers||[]), ...converted]
-  // dedupe by phone
-  const unique = merged.filter((v,i,a)=> a.findIndex(t=> (t.phone && v.phone && t.phone===v.phone) || t.id===v.id)===i)
-  
-  setDrivers(unique)
-  
-  const {data: t} = await supabase.from('trips').select('*').order('created_at',{ascending:false})
-  if(t) setTrips(t)
-  const {data: p} = await supabase.from('parcels').select('*').order('created_at',{ascending:false})
-  if(p) setParcels(p)
-}
+  const load = async ()=>{
+    const {data: fromDrivers} = await supabase.from('drivers').select('*').order('created_at',{ascending:false})
+    const {data: fromProfiles} = await supabase.from('profiles').select('*').eq('role','driver').order('created_at',{ascending:false})
+
+    const converted = (fromProfiles||[]).map((p:any)=>({
+      id: p.id,
+      user_id: p.id,
+      full_name: p.full_name,
+      phone: p.phone,
+      email: p.email || '',
+      vehicle_type: p.vehicle_type || 'N/A',
+      registration_number: p.registration_number || '',
+      verified: p.verified || false,
+      created_at: p.created_at
+    }))
+
+    const merged = [...(fromDrivers||[]),...converted]
+    const unique = merged.filter((v,i,a)=> a.findIndex(t=> (t.phone && v.phone && t.phone===v.phone) || t.id===v.id)===i)
+    setDrivers(unique)
+
+    const {data: t} = await supabase.from('trips').select('*').order('created_at',{ascending:false})
+    if(t) setTrips(t)
+    const {data: p} = await supabase.from('parcels').select('*').order('created_at',{ascending:false})
+    if(p) setParcels(p)
+
+    // bookings with fallback if trips FK not set
+    const {data: b, error} = await supabase.from('bookings').select('*, trips(from_city,to_city,price,date)').order('created_at',{ascending:false})
+    if(!error && b){
+      setBookings(b)
+    } else {
+      const {data: b2} = await supabase.from('bookings').select('*').order('created_at',{ascending:false})
+      let enriched = b2 || []
+      if(enriched.length>0){
+        const tripIds = [...new Set(enriched.map((x:any)=>x.trip_id))]
+        const {data: tripsData} = await supabase.from('trips').select('*').in('id', tripIds)
+        const map = Object.fromEntries((tripsData||[]).map((x:any)=>[x.id, x]))
+        enriched = enriched.map((x:any)=> ({...x, trips: map[x.trip_id]||null}))
+      }
+      setBookings(enriched)
+    }
+  }
+
   useEffect(()=>{load()},[])
 
-const approveDriver = async (id:string)=>{
-  await supabase.from('drivers').update({verified:true}).eq('id',id);
-  await supabase.from('profiles').update({verified:true}).eq('id',id);
-  await supabase.from('driver_profiles').update({verified:true}).eq('user_id',id);
-  
-  setDrivers(prev => prev.map(d => d.id === id ? { ...d, verified: true } : d))
-  setMsg("✅ Driver approved — now live!");
-  setTimeout(()=>setMsg(""),3000)
-}
+  const approveDriver = async (id:string)=>{
+    await supabase.from('drivers').update({verified:true}).eq('id',id);
+    await supabase.from('profiles').update({verified:true}).eq('id',id);
+    await supabase.from('driver_profiles').update({verified:true}).eq('user_id',id);
+    setDrivers(prev => prev.map(d => d.id === id? {...d, verified: true } : d))
+    setMsg("✅ Driver approved — now live!");
+    setTimeout(()=>setMsg(""),3000)
+  }
+
   const rejectDriver = async (id:string)=>{
     await supabase.from('drivers').update({verified:false}).eq('id',id);
-    setDrivers(prev => prev.map(d => d.id === id ? { ...d, verified: false } : d))
+    setDrivers(prev => prev.map(d => d.id === id? {...d, verified: false } : d))
     setSelected(null)
     await load()
   }
+
+  const confirmBooking = async(id:string)=>{
+    await supabase.from('bookings').update({status:'confirmed'}).eq('id',id)
+    setBookings(prev=> prev.map(b=> b.id===id? {...b, status:'confirmed'}: b))
+    setMsg("✅ Booking confirmed — customer will see green")
+    setTimeout(()=>setMsg(""),3000)
+  }
+
+  const cancelBookingAdmin = async(id:string)=>{
+    await supabase.from('bookings').update({status:'cancelled'}).eq('id',id)
+    setBookings(prev=> prev.map(b=> b.id===id? {...b, status:'cancelled'}: b))
+  }
+
   const handleDelete = async ()=>{
     if(!deleteTarget) return
     if(deleteTarget.type==='driver') await supabase.from('drivers').delete().eq('id',deleteTarget.id)
     if(deleteTarget.type==='trip') await supabase.from('trips').delete().eq('id',deleteTarget.id)
     if(deleteTarget.type==='parcel') await supabase.from('parcels').delete().eq('id',deleteTarget.id)
+    if(deleteTarget.type==='booking') await supabase.from('bookings').delete().eq('id',deleteTarget.id)
     setDeleteTarget(null); load()
   }
 
   const filteredDrivers = drivers.filter(d=> filter==="all"? true : filter==="pending"?!d.verified : d.verified)
   const pendingCount = drivers.filter(d=>!d.verified).length
+  const pendingBookings = bookings.filter(b=>b.status==='pending').length
 
   return(
     <div className="min-h-screen bg-[#0f1115] text-white flex">
       <div className="hidden md:flex w-[260px] bg-[#171a21] border-r border-white/10 flex-col p-6">
         <div className="flex items-center gap-3"><div className="w-9 h-9 bg-blue-600 rounded-full flex items-center justify-center font-black">T</div><span className="font-black text-[18px]">Tumani Admin</span></div>
         <div className="mt-8 space-y-1">
+          <button onClick={()=>setTab("bookings")} className={`w-full text-left rounded-xl px-4 py-3 font-black text-[13px] ${tab==="bookings"?"bg-white text-black":"text-white/40"}`}>🎫 Bookings {pendingBookings>0&&`(${pendingBookings})`}</button>
           <button onClick={()=>setTab("drivers")} className={`w-full text-left rounded-xl px-4 py-3 font-black text-[13px] ${tab==="drivers"?"bg-white text-black":"text-white/40"}`}>● Drivers {pendingCount>0&&`(${pendingCount} pending)`}</button>
           <button onClick={()=>setTab("trips")} className={`w-full text-left rounded-xl px-4 py-3 font-black text-[13px] ${tab==="trips"?"bg-white text-black":"text-white/40"}`}>Trips ({trips.length})</button>
           <button onClick={()=>setTab("parcels")} className={`w-full text-left rounded-xl px-4 py-3 font-black text-[13px] ${tab==="parcels"?"bg-white text-black":"text-white/40"}`}>📦 Parcels ({parcels.length})</button>
@@ -85,6 +115,33 @@ const approveDriver = async (id:string)=>{
 
       <div className="flex-1">
         {msg && <div className="bg-green-500 text-black font-black text-center py-2 text-[13px]">{msg}</div>}
+
+        {tab==="bookings" && (
+          <>
+            <div className="h-[64px] bg-[#171a21] border-b border-white/10 flex items-center justify-between px-6">
+              <h1 className="font-black text-[18px]">Bookings • {bookings.length} {pendingBookings>0&&`• ${pendingBookings} pending`}</h1>
+              <button onClick={load} className="px-4 py-2 rounded-full bg-white/10 text-[12px] font-black">Refresh</button>
+            </div>
+            <div className="px-6 py-6 space-y-3">
+              {bookings.length===0 && <p className="text-white/40 text-[14px]">No bookings yet</p>}
+              {bookings.map((b:any)=>(
+                <div key={b.id} className="bg-[#1c202a] border border-white/10 rounded-2xl p-5 flex justify-between items-center">
+                  <div>
+                    <p className="font-black text-[15px]">{b.trips?.from_city || "Trip"} → {b.trips?.to_city || b.trip_id?.slice(0,8)} {b.trips?.price?`• MK ${b.trips.price}`:""} {b.trips?.date?`• ${String(b.trips.date).slice(0,10)}`:""}</p>
+                    <p className="text-[13px] text-white/60 mt-1">{b.customer_name} • {b.customer_phone} • Driver: {b.driver_id?.slice(0,8)}</p>
+                    <p className="text-[11px] text-white/30 mt-1">{new Date(b.created_at).toLocaleString()}</p>
+                    <span className={`mt-2 inline-block px-2.5 py-1 rounded-full text-[10px] font-black ${b.status==='confirmed'?'bg-green-400 text-black': b.status==='cancelled'?'bg-red-400 text-black':'bg-amber-400 text-black'}`}>{b.status?.toUpperCase()}</span>
+                  </div>
+                  <div className="flex gap-2">
+                    {b.status==='pending' && <button onClick={()=>confirmBooking(b.id)} className="bg-green-500 text-black font-black px-6 py-2.5 rounded-full text-[12px]">Confirm</button>}
+                    {b.status!=='cancelled' && <button onClick={()=>cancelBookingAdmin(b.id)} className="bg-white/10 px-4 py-2.5 rounded-full text-[12px] font-black">Cancel</button>}
+                    <button onClick={()=>setDeleteTarget({id:b.id,type:'booking'})} className="bg-red-500/20 text-red-300 px-4 py-2.5 rounded-full text-[12px] font-black">Delete</button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
 
         {tab==="drivers" && (
           <>
@@ -102,7 +159,7 @@ const approveDriver = async (id:string)=>{
                   <div>
                     <p className="font-black">{d.full_name} • {d.vehicle_type}</p>
                     <p className="text-[13px] text-white/50">{d.email} • {d.phone} • {d.registration_number}</p>
-                    {!d.verified?<span className="mt-2 inline-block bg-amber-400 text-black px-2.5 py-1 rounded-full text-[10px] font-black">PENDING - as in your screenshot</span>:<span className="mt-2 inline-block bg-green-400 text-black px-2.5 py-1 rounded-full text-[10px] font-black">VERIFIED</span>}
+                    {!d.verified?<span className="mt-2 inline-block bg-amber-400 text-black px-2.5 py-1 rounded-full text-[10px] font-black">PENDING</span>:<span className="mt-2 inline-block bg-green-400 text-black px-2.5 py-1 rounded-full text-[10px] font-black">VERIFIED</span>}
                   </div>
                   <div className="flex gap-2">
                     {!d.verified && <button onClick={()=>approveDriver(d.id)} className="bg-green-500 text-black font-black px-6 py-2.5 rounded-full text-[12px]">Approve → Make Live</button>}
@@ -113,7 +170,34 @@ const approveDriver = async (id:string)=>{
             </div>
           </>
         )}
-        {/* keep your trips/parcels tabs same but change confirm to setDeleteTarget */}
+
+        {tab==="trips" && (
+          <div className="px-6 py-6">
+            <h1 className="font-black text-[18px] mb-4">Trips • {trips.length}</h1>
+            <div className="space-y-2">
+              {trips.map((t:any)=>(
+                <div key={t.id} className="bg-[#1c202a] border border-white/10 rounded-xl p-4 flex justify-between">
+                  <div className="text-[13px]">{t.from_city} → {t.to_city} • MK {t.price} • {String(t.date).slice(0,10)}</div>
+                  <button onClick={()=>setDeleteTarget({id:t.id,type:'trip'})} className="text-[12px] bg-white/10 px-3 py-1 rounded-full">Delete</button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {tab==="parcels" && (
+          <div className="px-6 py-6">
+            <h1 className="font-black text-[18px] mb-4">Parcels • {parcels.length}</h1>
+            <div className="space-y-2">
+              {parcels.map((p:any)=>(
+                <div key={p.id} className="bg-[#1c202a] border border-white/10 rounded-xl p-4 flex justify-between">
+                  <div className="text-[13px]">{p.title || p.description} • {p.status}</div>
+                  <button onClick={()=>setDeleteTarget({id:p.id,type:'parcel'})} className="text-[12px] bg-white/10 px-3 py-1 rounded-full">Delete</button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       {deleteTarget && (

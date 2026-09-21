@@ -39,6 +39,7 @@ function BookingsList(){
         enriched = enriched.map((b:any)=> ({...b, trips: tripMap[b.trip_id] || null}))
       }
       setBookings(enriched)
+       setLoading(false)
     })()
   },[phone])
 
