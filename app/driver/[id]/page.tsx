@@ -72,8 +72,11 @@ export default function DriverPage(){
         customer_phone: phone,
         status: 'pending'
       })
-      if(error) alert(error.message)
+        if(error) alert(error.message)
       else {
+        // SAVE PHONE SO MY TRIPS REMEMBERS IT
+        localStorage.setItem("tumani_last_phone", phone)
+        localStorage.setItem("tumani_last_name", name)
         alert('Booked! Driver will contact you.')
         window.location.href = `/my-bookings?phone=${phone}`
       }

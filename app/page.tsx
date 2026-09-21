@@ -81,8 +81,8 @@ export default function HomePage() {
             </div>
 
             <div className="mt-4 flex flex-wrap gap-3">
-              <Link href="/post" className="h-[48px] px-7 rounded-full bg-black text-white grid place-items-center font-black text-[14px]">Post a trip → Get bookings</Link>
-              <Link href="/marketplace" className="h-[48px] px-7 rounded-full bg-white border-[1.5px] border-black grid place-items-center font-black text-[14px]">Browse 8 trips</Link>
+              <Link href="/post" className="h-[48px] px-7 rounded-full bg-[#0a84ff] text-white grid place-items-center font-black text-[14px]">Post a trip → Get bookings</Link>
+              <Link href="/marketplace" className="h-[48px] px-7 rounded-full bg-white border-[1.5px] border-black grid place-items-center font-black text-[14px]">Browse  trips</Link>
             </div>
 
             <div className="mt-4 flex flex-wrap gap-2 text-[11px] font-bold">
