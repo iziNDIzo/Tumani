@@ -3,7 +3,7 @@ import { useState } from "react"
 
 const dict = {
   en: {
-    badge: "Verified drivers on the road now",
+    badge: "1 Verified driver on the road now",
     hero1: "Send anything,",
     hero2: "with drivers",
     hero3: "you can trust.",
@@ -26,7 +26,7 @@ const dict = {
     banned: "No cash >MK100k, no drugs, no weapons, no unpackaged phones",
   },
   ny: {
-    badge: "Madalaivala otsimikizika ali m'njira",
+    badge: "Madalaivala 1 otsimikizika ali m'njira",
     hero1: "Tumizani chilichonse,",
     hero2: "ndi madalaivala",
     hero3: "odalirika.",
