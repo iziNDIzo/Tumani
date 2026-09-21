@@ -17,7 +17,7 @@ export default function Marketplace(){
   return (
     <main className="max-w-[720px] mx-auto p-4 pb-20">
       <h1 className="font-black text-[24px]">Tumani Marketplace</h1>
-      <p className="text-[13px] opacity-60">{trips.length} trips • Blue is primary 🔵</p>
+    <p className="text-[13px] opacity-60">{trips.length} trips • Kasungu ↔ Zomba • Verified drivers only</p>
       <div className="mt-6 space-y-3">
         {trips.map(t=>(
           <div key={t.id} className="bg-white border border-black/10 rounded-[20px] p-4 flex justify-between items-center">
