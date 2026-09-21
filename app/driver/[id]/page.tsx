@@ -78,8 +78,7 @@ export default function DriverPage(){
         window.location.href = `/my-bookings?phone=${phone}`
       }
     }}
-    className="w-full p-3 rounded-xl bg-black text-white font-bold text-[14px]"
-  >
+ className="w-full p-3 rounded-xl bg-[#0a84ff] text-white font-bold text-[14px]">
     Book This Trip
   </button>
 </div>
