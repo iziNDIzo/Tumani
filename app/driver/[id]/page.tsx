@@ -64,22 +64,27 @@ export default function DriverPage(){
             {/* PASTE LOCATION - REVIEW FORM */}
             <form onSubmit={async(e)=>{
               e.preventDefault()
-              const form = e.target as any
-              await supabase.from('reviews').insert({ driver_id: id, rating: Number(form.rating.value), comment: form.comment.value })
-              form.reset()
-              alert('Review added!')
-              location.reload()
-            }} className="mt-4 flex gap-2">
-              <select name="rating" className="border rounded-full px-3 py-2 text-[13px]">
-                <option value="5">⭐ 5</option>
-                <option value="4">⭐ 4</option>
-                <option value="3">⭐ 3</option>
-                <option value="2">⭐ 2</option>
-                <option value="1">⭐ 1</option>
-              </select>
-              <input name="comment" placeholder="Write a review..." className="flex-1 border rounded-full px-4 py-2 text-[13px]" required />
-              <button className="bg-black text-white rounded-full px-5 text-[13px] font-black">Post</button>
-            </form>
+              const form = e.currentTarget
+       const { error } = await supabase.from('reviews').insert({
+    driver_id: id,
+    rating: Number(form.rating.value),
+    comment: form.comment.value
+  })
+  if(error){ alert('Error: '+error.message); return }
+  form.reset()
+  const { data } = await supabase.from('reviews').select('*').eq('driver_id', id)
+  if(data) setReviews(data)
+}} className="mt-4 flex gap-2 w-full">
+  <select name="rating" className="border rounded-full px-3 py-2 text-[13px] shrink-0">
+    <option value="5">⭐ 5</option>
+    <option value="4">⭐ 4</option>
+    <option value="3">⭐ 3</option>
+    <option value="2">⭐ 2</option>
+    <option value="1">⭐ 1</option>
+  </select>
+  <input name="comment" placeholder="Write a review..." className="flex-1 min-w-0 border rounded-full px-4 py-2 text-[13px]" required />
+  <button className="bg-black text-white rounded-full px-5 text-[13px] font-black shrink-0">Post</button>
+</form>
 
           </div>
         </div>
