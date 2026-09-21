@@ -96,7 +96,7 @@ export default function HomePage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 gap-4">
             <div className="bg-white rounded-[24px] border border-black/10 p-5 md:p-6">
               <div className="w-10 h-10 rounded-[12px] bg-[#fef3c7] grid place-items-center text-[20px]">📦</div>
-              <h3 className="mt-4 font-black text-[16px]">Send Parcel</h3>
+              <h3 className="mt-4 font-black text-[16px]"><a href="/send-parcel" className="...">Send a Parcel</a>l</h3>
               <p className="mt-2 text-[13px] leading-[1.5] text-black/60 font-medium">From documents to packages. Business verified customers get tracking codes.</p>
               <Link href="/post" className="mt-4 inline-block font-black text-[12px] underline">Post a trip to carry →</Link>
             </div>
@@ -104,7 +104,7 @@ export default function HomePage() {
               <div className="w-10 h-10 rounded-[12px] bg-[#dcfce7] grid place-items-center text-[20px]">🚗</div>
               <h3 className="mt-4 font-black text-[16px]">Book a Ride</h3>
               <p className="mt-2 text-[13px] leading-[1.5] text-black/60 font-medium">Seats with trusted drivers posting trips daily across Malawi.</p>
-              <Link href="/marketplace" className="mt-4 inline-block font-black text-[12px] underline">Find rides →</Link>
+              <Link href="/marketplace" className="mt-4 inline-block font-black text-[12px] underline"><a href="/find-trips">Find Trips</a> // for drivers→</Link>
             </div>
             <div className="xl:col-span-2 bg-black text-white rounded-[24px] p-5 md:p-6 flex flex-col justify-between">
               <div className="flex justify-between items-start">
