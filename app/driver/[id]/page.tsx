@@ -35,6 +35,7 @@ export default function DriverPage(){
 
   return (
     <main className="max-w-[720px] mx-auto p-4 pb-20">
+      <a href="/marketplace" className="inline-block mb-4 text-[13px] font-bold opacity-60">← Back to Marketplace</a>
       <div className="bg-white border border-black/10 rounded-[24px] p-5">
         <div className="flex items-center gap-3">
           <div className="w-14 h-14 bg-blue-600 text-white rounded-full grid place-items-center font-black text-[20px]">j</div>
@@ -65,10 +66,11 @@ export default function DriverPage(){
             <form onSubmit={async(e)=>{
               e.preventDefault()
               const form = e.currentTarget
-       const { error } = await supabase.from('reviews').insert({
+const { error } = await supabase.from('reviews').insert({
     driver_id: id,
     rating: Number(form.rating.value),
-    comment: form.comment.value
+    comment: form.comment.value,
+    author_name: 'Guest Rider'
   })
   if(error){ alert('Error: '+error.message); return }
   form.reset()
