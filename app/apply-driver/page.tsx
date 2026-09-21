@@ -102,10 +102,13 @@ export default function ApplyDriver(){
   return(
     <div className="min-h-screen bg-[#fafafa] text-[#010d19]">
       <div className="max-w-[520px] mx-auto px-5 py-8">
-        <div className="flex justify-between items-center mb-6">
-          <a href="/" className="font-black text-[20px] flex items-center gap-2"><span className="w-8 h-8 bg-[#0a84ff] rounded-[10px] text-white flex items-center justify-center">T</span>tumani</a>
-          <button onClick={()=>setLang(lang==='en'?'ny':'en')} className="h-[32px] px-4 rounded-full border border-gray-200 text-[11px] font-bold">{t.changeLang}</button>
-        </div>
+     <div className="flex justify-between items-center mb-6">
+  <div className="flex items-center gap-3">
+    <a href="/" className="w-9 h-9 bg-white border border-gray-200 rounded-full flex items-center justify-center text-[16px]">←</a>
+    <a href="/" className="font-black text-[20px] flex items-center gap-2"><span className="w-8 h-8 bg-[#0a84ff] rounded-[10px] text-white flex items-center justify-center">T</span>tumani</a>
+  </div>
+  <button onClick={()=>setLang(lang==='en'?'ny':'en')} className="h-[32px] px-4 rounded-full border border-gray-200 text-[11px] font-bold">{t.changeLang}</button>
+</div>
 
         <h1 className="text-[26px] font-black leading-[0.95] tracking-[-0.02em]">{t.title}</h1>
         <p className="text-[12px] text-[#010d19]/60 mt-2 leading-[1.5]">{t.sub}</p>
