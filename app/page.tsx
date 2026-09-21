@@ -20,7 +20,7 @@ export default function HomePage() {
             <Link href="/marketplace" className="hidden md:grid h-[40px] px-5 place-items-center rounded-full bg-black text-white font-black text-[13px]">Find Trips</Link>
             <Link href="/post" className="md:hidden h-[38px] px-3 grid place-items-center rounded-full bg-[#0a84ff] text-white font-black text-[13px]">+ Post</Link>
             <Link href="/marketplace" className="md:hidden h-[38px] px-4 grid place-items-center rounded-full bg-black text-white font-black text-[13px]">Find</Link>
-            <Link href="/driver/login" className="h-[38px] md:h-[40px] px-3 md:px-5 grid place-items-center rounded-full border-[1.5px] border-black font-black text-[12px] md:text-[13px]">Login</Link>
+       <Link href="/auth" className="h-[38px] md:h-[40px] px-3 md:px-5 grid place-items-center rounded-full border-[1.5px] border-black font-black text-[12px] md:text-[13px]">Login</Link>
           </div>
         </div>
       </header>
@@ -91,7 +91,7 @@ export default function HomePage() {
               <p className="mt-4 text-[13px] leading-[1.5] text-white/60 font-medium">Post: &quot;Going to Blantyre, 3 spaces left&quot;. Accept errands like airport pickups. Get paid via WhatsApp.</p>
               <div className="mt-5 grid grid-cols-2 gap-2">
                 <Link href="/post" className="h-[44px] rounded-full bg-white text-black grid place-items-center font-black text-[13px]">Post Trip Now</Link>
-                <Link href="/driver/register" className="h-[44px] rounded-full bg-white/10 text-white border border-white/20 grid place-items-center font-black text-[13px]">Apply as Driver</Link>
+                <Link href="/auth" className="h-[44px] rounded-full bg-white/10 text-white border border-white/20 grid place-items-center font-black text-[13px]">Apply as Driver</Link>
               </div>
             </div>
           </div>
