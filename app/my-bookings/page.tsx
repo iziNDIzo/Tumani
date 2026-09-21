@@ -61,10 +61,9 @@ function BookingsList(){
       <h1 className="text-[22px] font-black mt-4">My Bookings for {phone || "—"}</h1>
       <p className="text-[13px] text-gray-500 mt-1">{bookings.length} trip{bookings.length!==1?'s':''} found</p>
 
-      <div className="mt-5 space-y-3">
-        {loading && <p className="text-[14px] text-gray-500">Loading your trips...</p>}
-        {!loading && bookings.length===0 && <p className="text-[14px] text-gray-500">No bookings yet. Book a trip first.</p>}
-
+   <div className="mt-5 space-y-3">
+  {loading && bookings.length===0 && <p className="text-[14px] text-gray-500">Loading your trips...</p>}
+  {!loading && bookings.length===0 && <p className="text-[14px] text-gray-500">No bookings yet. Book a trip first.</p>}
         {bookings.map(b=>(
           <div key={b.id} className="p-4 rounded-[16px] border bg-white shadow-sm">
             <div className="flex justify-between items-start">
