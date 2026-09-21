@@ -24,13 +24,21 @@ function BookingsList(){
     (async()=>{
       setLoading(true)
       // fetch bookings WITH trip details
-      const { data } = await supabase
+        const { data: bookingsData } = await supabase
        .from('bookings')
-       .select('*, trips(from_city,to_city,price,date)')
+       .select('*')
        .eq('customer_phone', phone)
        .order('created_at',{ascending:false})
-      setBookings(data||[])
-      setLoading(false)
+      
+      // try to get trip city names separately
+      let enriched = bookingsData || []
+      if(enriched.length>0){
+        const tripIds = [...new Set(enriched.map((b:any)=>b.trip_id))]
+        const { data: tripsData } = await supabase.from('trips').select('*').in('id', tripIds)
+        const tripMap = Object.fromEntries((tripsData||[]).map((t:any)=>[t.id, t]))
+        enriched = enriched.map((b:any)=> ({...b, trips: tripMap[b.trip_id] || null}))
+      }
+      setBookings(enriched)
     })()
   },[phone])
 
