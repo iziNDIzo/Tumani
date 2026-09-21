@@ -26,14 +26,14 @@ return (
           <div key={t.id} className="bg-white border border-black/10 rounded-[20px] p-4 flex justify-between items-center">
             <div>
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 bg-blue-600 text-white rounded-full grid place-items-center font-black text-[12px]">{t.from_city?.[0]}</div>
+                <div className="w-8 h-8 bg-[#0a84ff] text-white rounded-full grid place-items-center font-black text-[12px]">{t.from_city?.[0]}</div>
                 <span className="font-black text-[14px]">Verified Driver ✓</span>
-                <span className="bg-blue-600 text-white px-2 py-0.5 rounded-full text-[10px] font-black">⭐ 5.0</span>
+                <span className="bg-[#0a84ff] text-white px-2 py-0.5 rounded-full text-[10px] font-black">⭐ 5.0</span>
               </div>
               <div className="mt-2 font-black">{t.from_city} → {t.to_city}</div>
               <div className="text-[12px] opacity-60">{String(t.date||'').slice(0,10)} • MK {t.price}</div>
             </div>
-            <Link href={`/driver/${t.driver_id}`} className="bg-blue-600 text-white px-5 py-2.5 rounded-full text-[12px] font-black">View</Link>
+            <Link href={`/driver/${t.driver_id}`} className="bg-[#0a84ff] text-white px-5 py-2.5 rounded-full text-[12px] font-black">View</Link>
           </div>
         ))}
       </div>
