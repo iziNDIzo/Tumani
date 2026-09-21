@@ -65,7 +65,7 @@ export default function AdminDashboard(){
   return(
     <div className="min-h-screen bg-[#0f1115] text-white flex">
       <div className="hidden md:flex w-[260px] bg-[#171a21] border-r border-white/10 flex-col p-6">
-        <div className="flex items-center gap-3"><div className="w-9 h-9 bg-blue-600 rounded-full flex items-center justify-center font-black">T</div><span className="font-black text-[18px]">Tumani Admin</span></div>
+        <div className="flex items-center gap-3"><div className="w-9 h-9 bg-[#0a84ff] rounded-full flex items-center justify-center font-black">T</div><span className="font-black text-[18px]">Tumani Admin</span></div>
         <div className="mt-8 space-y-1">
           <button onClick={()=>setTab("drivers")} className={`w-full text-left rounded-xl px-4 py-3 font-black text-[13px] ${tab==="drivers"?"bg-white text-black":"text-white/40"}`}>● Drivers {pendingCount>0&&`(${pendingCount} pending)`}</button>
           <button onClick={()=>setTab("trips")} className={`w-full text-left rounded-xl px-4 py-3 font-black text-[13px] ${tab==="trips"?"bg-white text-black":"text-white/40"}`}>Trips ({trips.length})</button>
