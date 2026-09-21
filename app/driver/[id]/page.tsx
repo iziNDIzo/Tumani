@@ -55,6 +55,34 @@ export default function DriverPage(){
           {/* THIS IS GREEN NOW */}
           <a href={`https://wa.me/${String(phone).replace(/\D/g,'')}`} target="_blank" className="bg-[#25D366] text-white rounded-full py-3 text-center font-black text-[14px]">WhatsApp</a>
         </div>
+        {/* BOOK TRIP - CUSTOMER LOOP */}
+<div className="mt-4 p-4 rounded-xl border bg-white">
+  <p className="text-[14px] font-black mb-2">Book this trip</p>
+  <input id="cust_name" placeholder="Your name" className="w-full p-3 rounded-lg border text-[14px] mb-2" />
+  <input id="cust_phone" placeholder="Your WhatsApp number" className="w-full p-3 rounded-lg border text-[14px] mb-2" />
+  <button
+    onClick={async()=>{
+      const name = (document.getElementById('cust_name') as HTMLInputElement).value
+      const phone = (document.getElementById('cust_phone') as HTMLInputElement).value
+      if(!name ||!phone) return alert('Add name & phone')
+      const { error } = await supabase.from('bookings').insert({
+        trip_id: trip.id,
+        driver_id: driver.id,
+        customer_name: name,
+        customer_phone: phone,
+        status: 'pending'
+      })
+      if(error) alert(error.message)
+      else {
+        alert('Booked! Driver will contact you.')
+        window.location.href = `/my-bookings?phone=${phone}`
+      }
+    }}
+    className="w-full p-3 rounded-xl bg-black text-white font-bold text-[14px]"
+  >
+    Book This Trip
+  </button>
+</div>
 
         <div className="mt-8">
           <div className="font-black">Reviews</div>
