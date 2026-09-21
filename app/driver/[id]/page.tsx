@@ -38,9 +38,9 @@ export default function DriverPage(){
       <a href="/marketplace" className="inline-block mb-4 text-[13px] font-bold opacity-60">← Back to Marketplace</a>
       <div className="bg-white border border-black/10 rounded-[24px] p-5">
         <div className="flex items-center gap-3">
-          <div className="w-14 h-14 bg-blue-600 text-white rounded-full grid place-items-center font-black text-[20px]">j</div>
+         <div className="w-14 h-14 bg-[#0a84ff] text-white rounded-full grid place-items-center">{name.charAt(0).toUpperCase()}</div>
           <div>
-            <div className="font-black text-[18px] flex items-center gap-2">{name} <span>✓</span> <span className="bg-blue-600 text-white px-2 py-0.5 rounded-full text-[11px]">⭐ {avg} ({reviews.length})</span></div>
+            <div className="font-black text-[18px] flex items-center gap-2">{name} <span>✓</span> <span className="bg-[#0a84ff] text-white px-2 py-0.5 rounded-full text-[11px]">⭐ {avg} ({reviews.length})</span></div>
             <div className="text-[13px] opacity-60">{phone}</div>
           </div>
         </div>
