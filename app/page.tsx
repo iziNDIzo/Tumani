@@ -55,6 +55,7 @@ const dict = {
 export default function Home(){
   const [lang,setLang]=useState<'en'|'ny'>('en')
   const [trips,setTrips]=useState<any[]>([])
+  const [open,setOpen]=useState(false)
   const t=dict[lang]
 
   useEffect(()=>{
@@ -75,18 +76,35 @@ export default function Home(){
             <span className="font-black text-[20px] tracking-tight">tumani</span>
             <button onClick={()=>setLang(lang==='en'?'ny':'en')} className="ml-2 h-[28px] px-3 rounded-full border border-gray-200 text-[11px] font-bold inline-flex items-center justify-center leading-none">{lang==='en'?'EN | NY':'NY | EN'}</button>
           </div>
+
+          {/* Desktop buttons - same as yours */}
           <nav className="hidden md:flex gap-2">
             <Link href="/available-trips" className="h-[40px] px-5 rounded-full border border-gray-200 text-[13px] font-bold inline-flex items-center justify-center leading-none">{t.avail}</Link>
             <Link href="/apply-driver" className="h-[40px] px-5 rounded-full bg-[#010d19] text-white text-[13px] font-bold inline-flex items-center justify-center leading-none">{t.apply}</Link>
             <Link href="/send-parcels" className="h-[40px] px-6 rounded-full bg-[#0a84ff] text-white text-[13px] font-black inline-flex items-center justify-center leading-none shadow-[0_8px_24px_rgba(10,132,255,0.25)]">Send Parcel</Link>
           </nav>
+
+          {/* Mobile hamburger */}
+          <button onClick={()=>setOpen(!open)} className="md:hidden w-10 h-10 rounded-full border border-gray-200 grid place-items-center">
+            <div className="space-y-1.5"><div className={`w-4 h-0.5 bg-black transition ${open?'rotate-45 translate-y-[3px]':''}`}></div><div className={`w-4 h-0.5 bg-black transition ${open?'opacity-0':''}`}></div><div className={`w-4 h-0.5 bg-black transition ${open?'-rotate-45 -translate-y-[3px]':''}`}></div></div>
+          </button>
         </div>
+
+        {/* Mobile menu - same buttons, stacked */}
+        {open && (
+          <div className="md:hidden border-t border-gray-100 bg-white px-5 py-4 space-y-2">
+            <Link onClick={()=>setOpen(false)} href="/available-trips" className="h-[48px] w-full rounded-full border border-gray-200 font-bold grid place-items-center">{t.avail}</Link>
+            <Link onClick={()=>setOpen(false)} href="/apply-driver" className="h-[48px] w-full rounded-full bg-[#010d19] text-white font-bold grid place-items-center">{t.apply}</Link>
+            <Link onClick={()=>setOpen(false)} href="/send-parcels" className="h-[48px] w-full rounded-full bg-[#0a84ff] text-white font-black grid place-items-center">{t.send}</Link>
+            <Link onClick={()=>setOpen(false)} href="/my-parcels" className="h-[48px] w-full rounded-full border border-gray-200 font-bold grid place-items-center">{t.track}</Link>
+          </div>
+        )}
       </header>
 
       <section className="max-w-[1200px] mx-auto px-5 pt-10 md:pt-16 pb-10 grid md:grid-cols-2 gap-10 items-start">
         <div>
-          <div className="inline-flex items-center gap-2 bg-green-50 border border-green-200 px-3 py-1.5 rounded-full text-[11px] font-bold text-green-700 mb-4"><span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>{trips.length} {t.badge}</div>
-          <h1 className="text-[38px] md:text-[56px] font-black leading-[0.9] tracking-[-0.03em]">{t.hero1}<br/>{t.hero2}<br/><span className="text-[#0a84ff]">{t.hero3}</span></h1>
+          <div className="inline-flex items-center gap-2 bg-green-50 border border-green-200 px-3 py-1.5 rounded-full text-[11px] font-bold text-green-700 mb-4"><span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>{trips.length>0?`${trips.length} ${t.badge}`:t.badge}</div>
+          <h1 className="text-[36px] sm:text-[38px] md:text-[56px] font-black leading-[0.9] tracking-[-0.03em]">{t.hero1}<br/>{t.hero2}<br/><span className="text-[#0a84ff]">{t.hero3}</span></h1>
           <p className="mt-4 text-[15px] leading-[1.6] text-[#010d19]/60 max-w-[440px]">{t.sub}</p>
 
           <div className="mt-6 grid grid-cols-1 gap-3 max-w-[460px]">
@@ -102,8 +120,7 @@ export default function Home(){
           <div className="mt-3 text-[10px] text-[#010d19]/40 font-medium">⚠️ {t.banned}</div>
         </div>
 
-        <div className="relative">
-          {/* DYNAMIC REAL TRIP CARD */}
+        <div className="relative w-full overflow-hidden">
           {realTrip? (
             <div className="bg-white border-2 border-black rounded-[28px] p-4 shadow-[0_24px_80px_rgba(1,13,25,0.08)]">
               <div className="flex justify-between items-start mb-3"><div><h3 className="font-black text-[15px]">🔴 LIVE: {realTrip.drivers?.full_name}</h3><p className="text-[11px] text-[#010d19]/50">{realTrip.drivers?.phone} • Real trip now</p></div><span className="bg-green-500 text-white text-[9px] font-black px-2 py-1 rounded-full animate-pulse">LIVE</span></div>
@@ -121,16 +138,16 @@ export default function Home(){
             </div>
           )}
 
-          {/* LIST ALL REAL TRIPS BELOW */}
           {trips.length>1 && (
             <div className="mt-4 space-y-2">
-              <div className="font-black text-[12px]">More live trips ({trips.length-1})</div>
-              {trips.slice(1).map((tr:any)=>(
+              <div className="font-black text-[12px]">More live trips ({trips.length-1}) - in /available-trips</div>
+              {trips.slice(1,3).map((tr:any)=>(
                 <div key={tr.id} className="bg-white border border-black/10 rounded-[16px] p-3 flex justify-between items-center">
                   <div><div className="font-black text-[13px]">{tr.from_city} → {tr.to_city}</div><div className="text-[11px] opacity-60">{tr.drivers?.full_name} • MK{tr.price}</div></div>
                   <div className="text-[11px] font-bold">{new Date(tr.date).toLocaleDateString()}</div>
                 </div>
               ))}
+              <Link href="/available-trips" className="text-[12px] font-bold text-[#0a84ff]">View all {trips.length} trips →</Link>
             </div>
           )}
         </div>
