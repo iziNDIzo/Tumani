@@ -72,8 +72,10 @@ export default function Home(){
       <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-xl border-b border-gray-100">
         <div className="max-w-[1200px] mx-auto px-5 h-[64px] flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 bg-[#0a84ff] rounded-[12px] flex items-center justify-center font-black text-white">T</div>
-            <span className="font-black text-[20px] tracking-tight">tumani</span>
+         <Link href="/" className="flex items-center gap-2.5">
+  <div className="w-9 h-9 bg-[#0a84ff] rounded-[12px] flex items-center justify-center font-black text-white">T</div>
+  <span className="font-black text-[20px] tracking-tight">tumani</span>
+</Link>
             <button onClick={()=>setLang(lang==='en'?'ny':'en')} className="ml-2 h-[28px] px-3 rounded-full border border-gray-200 text-[11px] font-bold inline-flex items-center justify-center leading-none">{lang==='en'?'EN | NY':'NY | EN'}</button>
           </div>
 
@@ -103,7 +105,10 @@ export default function Home(){
 
       <section className="max-w-[1200px] mx-auto px-5 pt-10 md:pt-16 pb-10 grid md:grid-cols-2 gap-10 items-start">
         <div>
-          <div className="inline-flex items-center gap-2 bg-green-50 border border-green-200 px-3 py-1.5 rounded-full text-[11px] font-bold text-green-700 mb-4"><span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>{trips.length>0?`${trips.length} ${t.badge}`:t.badge}</div>
+         <div className="inline-flex items-center gap-2 bg-green-50 border border-green-200 px-3 py-1.5 rounded-full text-[11px] font-bold text-green-700 mb-4">
+  <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+  {trips.length === 0? t.badge : trips.length === 1? `1 ${lang==='en'?'verified driver on the road now':'dalaivala wotsimikizika ali m\'njira'}` : `${trips.length} ${lang==='en'?'verified drivers on the road now':'madalaivala otsimikizika ali m\'njira'}`}
+</div>
           <h1 className="text-[36px] sm:text-[38px] md:text-[56px] font-black leading-[0.9] tracking-[-0.03em]">{t.hero1}<br/>{t.hero2}<br/><span className="text-[#0a84ff]">{t.hero3}</span></h1>
           <p className="mt-4 text-[15px] leading-[1.6] text-[#010d19]/60 max-w-[440px]">{t.sub}</p>
 
