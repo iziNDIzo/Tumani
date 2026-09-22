@@ -1,14 +1,16 @@
 "use client"
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { supabase } from "@/lib/supabaseClient"
+import Link from "next/link"
 
 const dict = {
   en: {
-    badge: "1 Verified driver on the road now",
+    badge: "Verified driver on the road now",
     hero1: "Send anything,",
     hero2: "with drivers",
     hero3: "you can trust.",
     sub: "Tumani only uses verified drivers. Every parcel has a code, ID check, and delivery photo.",
-    send: "Send Parcel — MK 3,500",
+    send: "Send Parcel — ",
     track: "Track My Parcel",
     avail: "View Trips", apply: "Become a Driver",
     trustTitle: "Built for safety, not just speed.",
@@ -16,7 +18,7 @@ const dict = {
     t1: "Verified drivers", t1d: "NRC + License + selfie verified by us. No anonymous drivers.",
     t2: "Code + ID check", t2d: "4-digit pickup code to collect. Receiver shows NRC to collect.",
     t3: "Photo proof", t3d: "Parcel photo at send, delivery photo at drop. You see everything.",
-    cardTitle: "How your parcel travels", cardDesc: "Real trip now. With safety checks at every step.",
+    cardTitle: "How your parcel travels", cardDesc: "Real trips now. With safety checks at every step.",
     from: "FROM", to: "TO", verified: "VERIFIED", departs: "DEPARTS", seats: "SPACE", price: "FEE",
     stepCode: "Pickup code: 4821", stepId: "ID check at delivery", stepPhoto: "Delivery photo required",
     how: "How it works", howSub: "Simple, safe, same day.",
@@ -26,12 +28,12 @@ const dict = {
     banned: "No cash >MK100k, no drugs, no weapons, no unpackaged phones",
   },
   ny: {
-    badge: "Madalaivala 1 otsimikizika ali m'njira",
+    badge: "Madalaivala otsimikizika ali m'njira",
     hero1: "Tumizani chilichonse,",
     hero2: "ndi madalaivala",
     hero3: "odalirika.",
     sub: "Tumani imagwiritsa ntchito madalaivala otsimikizika okha. Phukusi lililonse lili ndi code, ID check, ndi chithunzi.",
-    send: "Tumizani Phukusi — MK 3,500",
+    send: "Tumizani Phukusi — ",
     track: "Tsatirani Phukusi",
     avail: "Onani Maulendo", apply: "Khalani Dalaivala",
     trustTitle: "Yamangidwa mwachitetezo.",
@@ -52,7 +54,18 @@ const dict = {
 
 export default function Home(){
   const [lang,setLang]=useState<'en'|'ny'>('en')
+  const [trips,setTrips]=useState<any[]>([])
   const t=dict[lang]
+
+  useEffect(()=>{
+    ;(async()=>{
+      const {data} = await supabase.from('trips').select('*, drivers(full_name, phone)').eq('status','active').order('created_at',{ascending:false}).limit(10)
+      if(data) setTrips(data)
+    })()
+  },[])
+
+  const realTrip = trips[0]
+
   return(
     <div className="min-h-screen bg-white text-[#010d19] antialiased">
       <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-xl border-b border-gray-100">
@@ -63,20 +76,19 @@ export default function Home(){
             <button onClick={()=>setLang(lang==='en'?'ny':'en')} className="ml-2 h-[28px] px-3 rounded-full border border-gray-200 text-[11px] font-bold inline-flex items-center justify-center leading-none">{lang==='en'?'EN | NY':'NY | EN'}</button>
           </div>
           <nav className="hidden md:flex gap-2">
-            <a href="/available-trips" className="h-[40px] px-5 rounded-full border border-gray-200 text-[13px] font-bold inline-flex items-center justify-center leading-none">{t.avail}</a>
-            <a href="/apply-driver" className="h-[40px] px-5 rounded-full bg-[#010d19] text-white text-[13px] font-bold inline-flex items-center justify-center leading-none">{t.apply}</a>
-            <a href="/send-parcels" className="h-[40px] px-6 rounded-full bg-[#0a84ff] text-white text-[13px] font-black inline-flex items-center justify-center leading-none shadow-[0_8px_24px_rgba(10,132,255,0.25)]">Send Parcel</a>
+            <Link href="/available-trips" className="h-[40px] px-5 rounded-full border border-gray-200 text-[13px] font-bold inline-flex items-center justify-center leading-none">{t.avail}</Link>
+            <Link href="/apply-driver" className="h-[40px] px-5 rounded-full bg-[#010d19] text-white text-[13px] font-bold inline-flex items-center justify-center leading-none">{t.apply}</Link>
+            <Link href="/send-parcels" className="h-[40px] px-6 rounded-full bg-[#0a84ff] text-white text-[13px] font-black inline-flex items-center justify-center leading-none shadow-[0_8px_24px_rgba(10,132,255,0.25)]">Send Parcel</Link>
           </nav>
         </div>
       </header>
 
       <section className="max-w-[1200px] mx-auto px-5 pt-10 md:pt-16 pb-10 grid md:grid-cols-2 gap-10 items-start">
         <div>
-          <div className="inline-flex items-center gap-2 bg-green-50 border border-green-200 px-3 py-1.5 rounded-full text-[11px] font-bold text-green-700 mb-4"><span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>{t.badge}</div>
+          <div className="inline-flex items-center gap-2 bg-green-50 border border-green-200 px-3 py-1.5 rounded-full text-[11px] font-bold text-green-700 mb-4"><span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>{trips.length} {t.badge}</div>
           <h1 className="text-[38px] md:text-[56px] font-black leading-[0.9] tracking-[-0.03em]">{t.hero1}<br/>{t.hero2}<br/><span className="text-[#0a84ff]">{t.hero3}</span></h1>
           <p className="mt-4 text-[15px] leading-[1.6] text-[#010d19]/60 max-w-[440px]">{t.sub}</p>
 
-          {/* TRUST STRIP - PUBLIC SAFETY */}
           <div className="mt-6 grid grid-cols-1 gap-3 max-w-[460px]">
             <div className="flex gap-3 bg-gray-50 border border-gray-100 p-3 rounded-[16px]"><div className="w-8 h-8 bg-white border border-gray-100 rounded-full flex items-center justify-center text-[14px]">🛡️</div><div><div className="font-black text-[13px] leading-none">{t.t1}</div><div className="text-[11px] text-[#010d19]/60 mt-1">{t.t1d}</div></div></div>
             <div className="flex gap-3 bg-gray-50 border border-gray-100 p-3 rounded-[16px]"><div className="w-8 h-8 bg-white border border-gray-100 rounded-full flex items-center justify-center text-[14px]">🔑</div><div><div className="font-black text-[13px] leading-none">{t.t2}</div><div className="text-[11px] text-[#010d19]/60 mt-1">{t.t2d}</div></div></div>
@@ -84,29 +96,53 @@ export default function Home(){
           </div>
 
           <div className="mt-6 flex gap-3">
-            <a href="/send-parcels" className="h-[50px] px-7 rounded-full bg-[#0a84ff] text-white font-black text-[14px] inline-flex items-center justify-center leading-none shadow-[0_12px_32px_rgba(10,132,255,0.3)]">{t.send}</a>
-            <a href="/my-parcels" className="h-[50px] px-5 rounded-full border border-gray-200 font-bold text-[13px] inline-flex items-center justify-center leading-none">{t.track}</a>
+            <Link href="/send-parcels" className="h-[50px] px-7 rounded-full bg-[#0a84ff] text-white font-black text-[14px] inline-flex items-center justify-center leading-none shadow-[0_12px_32px_rgba(10,132,255,0.3)]">{t.send}</Link>
+            <Link href="/my-parcels" className="h-[50px] px-5 rounded-full border border-gray-200 font-bold text-[13px] inline-flex items-center justify-center leading-none">{t.track}</Link>
           </div>
           <div className="mt-3 text-[10px] text-[#010d19]/40 font-medium">⚠️ {t.banned}</div>
         </div>
 
         <div className="relative">
-          <div className="bg-white border border-gray-100 rounded-[28px] p-4 shadow-[0_24px_80px_rgba(1,13,25,0.08)]">
-            <div className="flex justify-between items-start mb-3"><div><h3 className="font-black text-[15px]">{t.cardTitle}</h3><p className="text-[11px] text-[#010d19]/50">{t.cardDesc}</p></div><span className="bg-[#010d19] text-white text-[9px] font-black px-2 py-1 rounded-full">{t.verified}</span></div>
-            <div className="bg-[#010d19] text-white p-4 rounded-[20px] flex justify-between items-center"><div><div className="text-[9px] opacity-60 tracking-widest">{t.from}</div><div className="font-black text-[17px]">Lilongwe</div></div><div className="text-[#0a84ff]">→</div><div className="text-right"><div className="text-[9px] opacity-60 tracking-widest">{t.to}</div><div className="font-black text-[17px]">Blantyre</div></div></div>
-            <div className="mt-3 bg-amber-50 border border-amber-200 p-3 rounded-[16px] text-[11px] space-y-1"><div>✅ {t.stepCode}</div><div>✅ {t.stepId}</div><div>✅ {t.stepPhoto}</div></div>
-            <div className="grid grid-cols-3 gap-2 mt-3"><div className="bg-gray-50 p-2.5 rounded-[14px] text-center"><div className="text-[9px] opacity-50">{t.departs}</div><div className="font-black text-[12px]">Today 2PM</div></div><div className="bg-gray-50 p-2.5 rounded-[14px] text-center"><div className="text-[9px] opacity-50">{t.seats}</div><div className="font-black text-[12px]">3 parcels</div></div><div className="bg-[#8b5cf6]/10 p-2.5 rounded-[14px] text-center"><div className="text-[9px] text-[#8b5cf6]">{t.price}</div><div className="font-black text-[12px] text-[#8b5cf6]">MK 3,500</div></div></div>
-          </div>
+          {/* DYNAMIC REAL TRIP CARD */}
+          {realTrip? (
+            <div className="bg-white border-2 border-black rounded-[28px] p-4 shadow-[0_24px_80px_rgba(1,13,25,0.08)]">
+              <div className="flex justify-between items-start mb-3"><div><h3 className="font-black text-[15px]">🔴 LIVE: {realTrip.drivers?.full_name}</h3><p className="text-[11px] text-[#010d19]/50">{realTrip.drivers?.phone} • Real trip now</p></div><span className="bg-green-500 text-white text-[9px] font-black px-2 py-1 rounded-full animate-pulse">LIVE</span></div>
+              <div className="bg-[#010d19] text-white p-4 rounded-[20px] flex justify-between items-center"><div><div className="text-[9px] opacity-60 tracking-widest">{t.from}</div><div className="font-black text-[17px]">{realTrip.from_city}</div></div><div className="text-[#0a84ff]">→</div><div className="text-right"><div className="text-[9px] opacity-60 tracking-widest">{t.to}</div><div className="font-black text-[17px]">{realTrip.to_city}</div></div></div>
+              <div className="mt-3 bg-amber-50 border border-amber-200 p-3 rounded-[16px] text-[11px] space-y-1"><div>✅ Pickup code: 4821</div><div>✅ Driver: {realTrip.drivers?.full_name}</div><div>✅ Photo proof required</div></div>
+              <div className="grid grid-cols-3 gap-2 mt-3"><div className="bg-gray-50 p-2.5 rounded-[14px] text-center"><div className="text-[9px] opacity-50">{t.departs}</div><div className="font-black text-[12px]">{realTrip.date? new Date(realTrip.date).toLocaleDateString() : 'Today'}</div></div><div className="bg-gray-50 p-2.5 rounded-[14px] text-center"><div className="text-[9px] opacity-50">{t.seats}</div><div className="font-black text-[12px]">{realTrip.seats} seats</div></div><div className="bg-[#8b5cf6]/10 p-2.5 rounded-[14px] text-center"><div className="text-[9px] text-[#8b5cf6]">{t.price}</div><div className="font-black text-[12px] text-[#8b5cf6]">MK {realTrip.price}</div></div></div>
+              <Link href="/available-trips" className="mt-3 w-full h-[44px] bg-[#0a84ff] text-white rounded-full grid place-items-center font-black text-[13px]">Book this trip →</Link>
+            </div>
+          ) : (
+            <div className="bg-white border border-gray-100 rounded-[28px] p-4 shadow-[0_24px_80px_rgba(1,13,25,0.08)]">
+              <div className="flex justify-between items-start mb-3"><div><h3 className="font-black text-[15px]">{t.cardTitle}</h3><p className="text-[11px] text-[#010d19]/50">{t.cardDesc}</p></div><span className="bg-[#010d19] text-white text-[9px] font-black px-2 py-1 rounded-full">{t.verified}</span></div>
+              <div className="bg-[#010d19] text-white p-4 rounded-[20px] flex justify-between items-center"><div><div className="text-[9px] opacity-60 tracking-widest">{t.from}</div><div className="font-black text-[17px]">Lilongwe</div></div><div className="text-[#0a84ff]">→</div><div className="text-right"><div className="text-[9px] opacity-60 tracking-widest">{t.to}</div><div className="font-black text-[17px]">Blantyre</div></div></div>
+              <div className="mt-3 bg-amber-50 border border-amber-200 p-3 rounded-[16px] text-[11px] space-y-1"><div>✅ {t.stepCode}</div><div>✅ {t.stepId}</div><div>✅ {t.stepPhoto}</div></div>
+              <div className="grid grid-cols-3 gap-2 mt-3"><div className="bg-gray-50 p-2.5 rounded-[14px] text-center"><div className="text-[9px] opacity-50">{t.departs}</div><div className="font-black text-[12px]">Today 2PM</div></div><div className="bg-gray-50 p-2.5 rounded-[14px] text-center"><div className="text-[9px] opacity-50">{t.seats}</div><div className="font-black text-[12px]">3 parcels</div></div><div className="bg-[#8b5cf6]/10 p-2.5 rounded-[14px] text-center"><div className="text-[9px] text-[#8b5cf6]">{t.price}</div><div className="font-black text-[12px] text-[#8b5cf6]">MK 3,500</div></div></div>
+            </div>
+          )}
+
+          {/* LIST ALL REAL TRIPS BELOW */}
+          {trips.length>1 && (
+            <div className="mt-4 space-y-2">
+              <div className="font-black text-[12px]">More live trips ({trips.length-1})</div>
+              {trips.slice(1).map((tr:any)=>(
+                <div key={tr.id} className="bg-white border border-black/10 rounded-[16px] p-3 flex justify-between items-center">
+                  <div><div className="font-black text-[13px]">{tr.from_city} → {tr.to_city}</div><div className="text-[11px] opacity-60">{tr.drivers?.full_name} • MK{tr.price}</div></div>
+                  <div className="text-[11px] font-bold">{new Date(tr.date).toLocaleDateString()}</div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
       <section className="bg-[#010d19] text-white py-14 rounded-t-[36px]">
         <div className="max-w-[1200px] mx-auto px-5">
-          <h2 className="text-[28px] font-black">{t.how} <span className="text-[#0a84ff]">— safe.</span></h2><p className="text-white/50 text-[13px] mt-1 mb-7">{t.howSub}</p>
+          <h2 className="text-[28px] font-black">{dict[lang].how} <span className="text-[#0a84ff]">— safe.</span></h2><p className="text-white/50 text-[13px] mt-1 mb-7">{dict[lang].howSub}</p>
           <div className="grid md:grid-cols-3 gap-3">
-            <div className="bg-white/[0.06] border border-white/10 p-5 rounded-[20px]"><div className="w-8 h-8 bg-white text-[#010d19] rounded-full flex items-center justify-center font-black text-[12px] mb-3">1</div><div className="font-bold text-[14px]">{t.s1t}</div><div className="text-[12px] text-white/50 mt-1">{t.s1d}</div></div>
-            <div className="bg-white/[0.06] border border-white/10 p-5 rounded-[20px]"><div className="w-8 h-8 bg-[#0a84ff] rounded-full flex items-center justify-center font-black text-[12px] mb-3">2</div><div className="font-bold text-[14px]">{t.s2t}</div><div className="text-[12px] text-white/50 mt-1">{t.s2d}</div></div>
-            <div className="bg-white/[0.06] border border-white/10 p-5 rounded-[20px]"><div className="w-8 h-8 bg-[#8b5cf6] rounded-full flex items-center justify-center font-black text-[12px] mb-3">3</div><div className="font-bold text-[14px]">{t.s3t}</div><div className="text-[12px] text-white/50 mt-1">{t.s3d}</div></div>
+            <div className="bg-white/[0.06] border border-white/10 p-5 rounded-[20px]"><div className="w-8 h-8 bg-white text-[#010d19] rounded-full flex items-center justify-center font-black text-[12px] mb-3">1</div><div className="font-bold text-[14px]">{dict[lang].s1t}</div><div className="text-[12px] text-white/50 mt-1">{dict[lang].s1d}</div></div>
+            <div className="bg-white/[0.06] border border-white/10 p-5 rounded-[20px]"><div className="w-8 h-8 bg-[#0a84ff] rounded-full flex items-center justify-center font-black text-[12px] mb-3">2</div><div className="font-bold text-[14px]">{dict[lang].s2t}</div><div className="text-[12px] text-white/50 mt-1">{dict[lang].s2d}</div></div>
+            <div className="bg-white/[0.06] border border-white/10 p-5 rounded-[20px]"><div className="w-8 h-8 bg-[#8b5cf6] rounded-full flex items-center justify-center font-black text-[12px] mb-3">3</div><div className="font-bold text-[14px]">{dict[lang].s3t}</div><div className="text-[12px] text-white/50 mt-1">{dict[lang].s3d}</div></div>
           </div>
         </div>
       </section>
