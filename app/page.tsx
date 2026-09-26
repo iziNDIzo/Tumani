@@ -10,6 +10,7 @@ const dict = {
     hero2: "with drivers",
     hero3: "you can trust.",
     sub: "Tumani only uses verified drivers. Every parcel has a code, ID check, and delivery photo.",
+    voiceLine: "🎙️ New: drivers can now speak an SOS or breakdown alert — hands-free, powered by AssemblyAI.",
     send: "Send Parcel — ",
     track: "Track My Parcel",
     avail: "View Trips", apply: "Become a Driver",
@@ -18,6 +19,7 @@ const dict = {
     t1: "Verified drivers", t1d: "NRC + License + selfie verified by us. No anonymous drivers.",
     t2: "Code + ID check", t2d: "4-digit pickup code to collect. Receiver shows NRC to collect.",
     t3: "Photo proof", t3d: "Parcel photo at send, delivery photo at drop. You see everything.",
+    t4: "Voice SOS", t4d: "Speak to alert mechanics or get help fast during a breakdown.",
     cardTitle: "How your parcel travels", cardDesc: "Real trips now. With safety checks at every step.",
     from: "FROM", to: "TO", verified: "VERIFIED", departs: "DEPARTS", seats: "SPACE", price: "FEE",
     stepCode: "Pickup code: 4821", stepId: "ID check at delivery", stepPhoto: "Delivery photo required",
@@ -33,6 +35,7 @@ const dict = {
     hero2: "ndi madalaivala",
     hero3: "odalirika.",
     sub: "Tumani imagwiritsa ntchito madalaivala otsimikizika okha. Phukusi lililonse lili ndi code, ID check, ndi chithunzi.",
+    voiceLine: "🎙️ Yatsopano: madalaivala tsopano akhoza kuyankhula SOS kapena kuchenjeza pa breakdown — popanda kukhudza foni, mogwiritsa ntchito AssemblyAI.",
     send: "Tumizani Phukusi — ",
     track: "Tsatirani Phukusi",
     avail: "Onani Maulendo", apply: "Khalani Dalaivala",
@@ -41,6 +44,7 @@ const dict = {
     t1: "Madalaivala otsimikizika", t1d: "NRC + License + selfie yotsimikizika. Palibe wachinsinsi.",
     t2: "Code + ID check", t2d: "Code ya manambala 4 kutenga. Wolandira awonetse NRC.",
     t3: "Umboni ndi chithunzi", t3d: "Chithunzi potumiza ndi pofika. Mukuwona zonse.",
+    t4: "Voice SOS", t4d: "Yankhulani kuti muchenjeze amisiri kapena mupeze thandizo mwachangu pamene galimoto yasokonekera.",
     cardTitle: "Momwe phukusi lanu limayendera", cardDesc: "Ulendo weniweni tsopano. Ndi chitetezo pa sitepe iliyonse.",
     from: "KUCHOKERA", to: "KUPITA", verified: "OTSIMIKIZIKA", departs: "NYAMUKA", seats: "MALO", price: "MTENGO",
     stepCode: "Code yotenga: 4821", stepId: "ID check pofika", stepPhoto: "Chithunzi chofunikira pofika",
@@ -111,11 +115,15 @@ export default function Home(){
 </div>
           <h1 className="text-[36px] sm:text-[38px] md:text-[56px] font-black leading-[0.9] tracking-[-0.03em]">{t.hero1}<br/>{t.hero2}<br/><span className="text-[#0a84ff]">{t.hero3}</span></h1>
           <p className="mt-4 text-[15px] leading-[1.6] text-[#010d19]/60 max-w-[440px]">{t.sub}</p>
+          <div className="mt-3 inline-flex items-center gap-2 bg-red-50 border border-red-100 px-3 py-1.5 rounded-full text-[11px] font-bold text-red-700 max-w-[460px]">
+            {t.voiceLine}
+          </div>
 
           <div className="mt-6 grid grid-cols-1 gap-3 max-w-[460px]">
             <div className="flex gap-3 bg-gray-50 border border-gray-100 p-3 rounded-[16px]"><div className="w-8 h-8 bg-white border border-gray-100 rounded-full flex items-center justify-center text-[14px]">🛡️</div><div><div className="font-black text-[13px] leading-none">{t.t1}</div><div className="text-[11px] text-[#010d19]/60 mt-1">{t.t1d}</div></div></div>
             <div className="flex gap-3 bg-gray-50 border border-gray-100 p-3 rounded-[16px]"><div className="w-8 h-8 bg-white border border-gray-100 rounded-full flex items-center justify-center text-[14px]">🔑</div><div><div className="font-black text-[13px] leading-none">{t.t2}</div><div className="text-[11px] text-[#010d19]/60 mt-1">{t.t2d}</div></div></div>
             <div className="flex gap-3 bg-gray-50 border border-gray-100 p-3 rounded-[16px]"><div className="w-8 h-8 bg-white border border-gray-100 rounded-full flex items-center justify-center text-[14px]">📸</div><div><div className="font-black text-[13px] leading-none">{t.t3}</div><div className="text-[11px] text-[#010d19]/60 mt-1">{t.t3d}</div></div></div>
+            <div className="flex gap-3 bg-red-50 border border-red-100 p-3 rounded-[16px]"><div className="w-8 h-8 bg-white border border-red-100 rounded-full flex items-center justify-center text-[14px]">🎙️</div><div><div className="font-black text-[13px] leading-none">{t.t4}</div><div className="text-[11px] text-[#010d19]/60 mt-1">{t.t4d}</div></div></div>
           </div>
 
           <div className="mt-6 flex gap-3">

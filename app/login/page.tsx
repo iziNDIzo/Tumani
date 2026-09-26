@@ -14,8 +14,15 @@ export default function Login() {
     e.preventDefault()
     setLoading(true)
     const { error } = await supabase.auth.signInWithPassword({ email, password })
-    if (error) alert(error.message)
-    else router.push('/driver/register')
+    if (error) {
+      alert(error.message)
+    } else {
+      // Go back to the page that sent you here, e.g. /login?next=/apply-driver.
+      // Only allow paths inside this site (must start with a single "/").
+      const next = new URLSearchParams(window.location.search).get('next')
+      const safe = next && next.startsWith('/') && !next.startsWith('//') ? next : '/'
+      router.push(safe)
+    }
     setLoading(false)
   }
 

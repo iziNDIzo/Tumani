@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.116.0",
+    "assemblyai": "^4.41.5",
     "firebase": "^12.19.0",
     "html5-qrcode": "^2.3.8",
     "lucide-react": "^1.45.0",
