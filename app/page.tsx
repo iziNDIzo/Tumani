@@ -13,7 +13,7 @@ const dict = {
     voiceLine: "🎙️ New: drivers can now speak an SOS or breakdown alert — hands-free, powered by AssemblyAI.",
     send: "Send Parcel — ",
     track: "Track My Parcel",
-    avail: "View Trips", apply: "Become a Driver", mechanic: "Mechanic",
+   avail: "View Trips", apply: "Become a Driver", mechanic: "Mechanic", guardian: "Voice Guardian",
     trustTitle: "Built for safety, not just speed.",
     trustSub: "We know parcel stories in Malawi. Tumani fixes that with 3 checks.",
     t1: "Verified drivers", t1d: "NRC + License + selfie verified by us. No anonymous drivers.",
@@ -38,7 +38,7 @@ const dict = {
     voiceLine: "🎙️ Yatsopano: madalaivala tsopano akhoza kuyankhula SOS kapena kuchenjeza pa breakdown — popanda kukhudza foni, mogwiritsa ntchito AssemblyAI.",
     send: "Tumizani Phukusi — ",
     track: "Tsatirani Phukusi",
-    avail: "Onani Maulendo", apply: "Khalani Dalaivala", mechanic: "Mmisiri",
+    avail: "Onani Maulendo", apply: "Khalani Dalaivala", mechanic: "Mmisiri", guardian: "Voice Guardian",
     trustTitle: "Yamangidwa mwachitetezo.",
     trustSub: "Timadziwa nkhani za maphukusi. Tumani imateteza ndi macheke 3.",
     t1: "Madalaivala otsimikizika", t1d: "NRC + License + selfie yotsimikizika. Palibe wachinsinsi.",
@@ -86,6 +86,7 @@ export default function Home(){
           {/* Desktop buttons - same as yours */}
           <nav className="hidden md:flex gap-2">
             <Link href="/available-trips" className="h-[40px] px-5 rounded-full border border-gray-200 text-[13px] font-bold inline-flex items-center justify-center leading-none">{t.avail}</Link>
+            <Link href="/my-trips" className="h-[40px] px-5 rounded-full border border-gray-200 text-[13px] font-bold inline-flex items-center justify-center leading-none">🎙️ {t.guardian}</Link>
             <Link href="/mechanic-alerts" className="h-[40px] px-5 rounded-full border border-red-200 text-red-700 text-[13px] font-bold inline-flex items-center justify-center leading-none">🚨 {t.mechanic}</Link>
             <Link href="/apply-driver" className="h-[40px] px-5 rounded-full bg-[#010d19] text-white text-[13px] font-bold inline-flex items-center justify-center leading-none">{t.apply}</Link>
             <Link href="/send-parcels" className="h-[40px] px-6 rounded-full bg-[#0a84ff] text-white text-[13px] font-black inline-flex items-center justify-center leading-none shadow-[0_8px_24px_rgba(10,132,255,0.25)]">Send Parcel</Link>
@@ -101,6 +102,7 @@ export default function Home(){
         {open && (
           <div className="md:hidden border-t border-gray-100 bg-white px-5 py-4 space-y-2">
             <Link onClick={()=>setOpen(false)} href="/available-trips" className="h-[48px] w-full rounded-full border border-gray-200 font-bold grid place-items-center">{t.avail}</Link>
+            <Link onClick={()=>setOpen(false)} href="/my-trips" className="h-[48px] w-full rounded-full border border-gray-200 font-bold grid place-items-center">🎙️ {t.guardian}</Link>
             <Link onClick={()=>setOpen(false)} href="/mechanic-alerts" className="h-[48px] w-full rounded-full border border-red-200 text-red-700 font-bold grid place-items-center">🚨 {t.mechanic}</Link>
             <Link onClick={()=>setOpen(false)} href="/apply-driver" className="h-[48px] w-full rounded-full bg-[#010d19] text-white font-bold grid place-items-center">{t.apply}</Link>
             <Link onClick={()=>setOpen(false)} href="/send-parcels" className="h-[48px] w-full rounded-full bg-[#0a84ff] text-white font-black grid place-items-center">{t.send}</Link>
@@ -117,9 +119,9 @@ export default function Home(){
 </div>
           <h1 className="text-[36px] sm:text-[38px] md:text-[56px] font-black leading-[0.9] tracking-[-0.03em]">{t.hero1}<br/>{t.hero2}<br/><span className="text-[#0a84ff]">{t.hero3}</span></h1>
           <p className="mt-4 text-[15px] leading-[1.6] text-[#010d19]/60 max-w-[440px]">{t.sub}</p>
-          <div className="mt-3 inline-flex items-center gap-2 bg-red-50 border border-red-100 px-3 py-1.5 rounded-full text-[11px] font-bold text-red-700 max-w-[460px]">
-            {t.voiceLine}
-          </div>
+       <Link href="/my-trips" className="mt-3 inline-flex items-center gap-2 bg-red-50 border border-red-100 px-3 py-1.5 rounded-full text-[11px] font-bold text-red-700 max-w-[460px] hover:underline">
+  {t.voiceLine}
+</Link>
 
           <div className="mt-6 grid grid-cols-1 gap-3 max-w-[460px]">
             <div className="flex gap-3 bg-gray-50 border border-gray-100 p-3 rounded-[16px]"><div className="w-8 h-8 bg-white border border-gray-100 rounded-full flex items-center justify-center text-[14px]">🛡️</div><div><div className="font-black text-[13px] leading-none">{t.t1}</div><div className="text-[11px] text-[#010d19]/60 mt-1">{t.t1d}</div></div></div>
