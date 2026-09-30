@@ -1,36 +1,55 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Tumani - Voice Guardian
 
-## Getting Started
+**Voice Guardian turns a driver's own voice into their fastest way to call for help.**
 
-First, run the development server:
+Built for the AssemblyAI Voice Agent Hackathon on lablab.ai.
 
+## The problem
+Tumani connects professional drivers across Malawi for trip-sharing, parcel delivery, and errands. Many drivers travel alone on unfamiliar roads. When a vehicle breaks down, getting help fast is hard, and typing on a phone under stress isn't realistic.
+
+## What Voice Guardian does
+- A driver taps **Breakdown** on a trip and speaks what's wrong.
+- AssemblyAI transcribes the speech.
+- An alert with the transcript and the driver's location is sent to mechanics.
+- Mechanics see open alerts and can claim the job.
+
+## Try it (demo access)
+**Live app:** https://tumani.vercel.app
+
+**Driver demo login**
+- Email: tumani.demo.driver@outlook.com
+- Password: Admin2026
+
+**How to test**
+1. Open the live app and tap the red "New: drivers can now speak an SOS..." banner (or **Voice Guardian** in the menu).
+2. Log in with the driver demo account.
+3. On My trips, tap **Breakdown** on the trip, then **Start Recording**. Allow microphone and location when asked.
+4. Describe a problem, for example "My car has a flat tyre near Kasungu", then tap **Stop Recording**.
+5. Check the transcript and tap **Send Alert to Mechanics**.
+6. **Mechanic side:** on the homepage, tap **Mechanic**. No login is needed. The alert appears there.
+
+The demo accounts contain no real data.
+
+**Demo video:** [add your YouTube link]
+
+## Built with
+Next.js, React, TypeScript, Tailwind CSS, Supabase, Vercel, and AssemblyAI speech-to-text.
+
+## Run locally
+```bash
+git clone [add your GitHub repo link]
+cd tumani-parcels
+npm install
+```
+Create a `.env.local` file with your Supabase project URL and key and your AssemblyAI API key (the variable names are used in `lib/supabaseClient.ts` and `app/api/transcribe`). Then run:
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## What's next
+- Mechanic sign-up, profiles, and a login-protected dashboard
+- Paid driver subscriptions for Voice Guardian
+- Alerts to other drivers on the same road
+- SMS fallback for weak connectivity
+- A guided voice SOS flow for accidents
+- Local language support such as Chichewa
