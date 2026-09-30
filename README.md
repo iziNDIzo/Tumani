@@ -18,7 +18,7 @@ Tumani connects professional drivers across Malawi for trip-sharing, parcel deli
 
 **Driver demo login**
 - Email: tumani.demo.driver@outlook.com
-- Password: Admin2026
+- Password: demo2026
 
 **How to test**
 1. Open the live app and tap the red "New: drivers can now speak an SOS..." banner (or **Voice Guardian** in the menu).
@@ -30,7 +30,7 @@ Tumani connects professional drivers across Malawi for trip-sharing, parcel deli
 
 The demo accounts contain no real data.
 
-**Demo video:** [add your YouTube link]
+
 
 ## Built with
 Next.js, React, TypeScript, Tailwind CSS, Supabase, Vercel, and AssemblyAI speech-to-text.
